@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
   title: "MedCore - Doctor Chamber Management",
@@ -17,7 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased min-h-screen bg-slate-50`}>
+      <body className={`${inter.variable} font-sans antialiased min-h-screen bg-slate-50`}>
         {children}
         <Toaster position="top-right" />
       </body>
