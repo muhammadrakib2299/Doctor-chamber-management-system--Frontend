@@ -10,6 +10,7 @@ interface User {
     doctorInfo?: any;
     doctorId?: string;
     subscription?: any;
+    id?: string;
 }
 
 interface AuthState {
