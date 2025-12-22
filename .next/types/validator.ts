@@ -36,6 +36,15 @@ type LayoutConfig<Route extends LayoutRoutes = LayoutRoutes> = {
 }
 
 
+// Validate ../../app/(admin)/admin/assistants/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/admin/assistants">> = Specific
+  const handler = {} as typeof import("../../app/(admin)/admin/assistants/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../app/(admin)/admin/dashboard/page.tsx
 {
   type __IsExpected<Specific extends AppPageConfig<"/admin/dashboard">> = Specific
@@ -58,6 +67,78 @@ type LayoutConfig<Route extends LayoutRoutes = LayoutRoutes> = {
 {
   type __IsExpected<Specific extends AppPageConfig<"/admin/doctors">> = Specific
   const handler = {} as typeof import("../../app/(admin)/admin/doctors/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/(admin)/admin/settings/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/admin/settings">> = Specific
+  const handler = {} as typeof import("../../app/(admin)/admin/settings/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/(admin)/admin/subscriptions/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/admin/subscriptions">> = Specific
+  const handler = {} as typeof import("../../app/(admin)/admin/subscriptions/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/(doctor)/doctor/appointments/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/doctor/appointments">> = Specific
+  const handler = {} as typeof import("../../app/(doctor)/doctor/appointments/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/(doctor)/doctor/dashboard/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/doctor/dashboard">> = Specific
+  const handler = {} as typeof import("../../app/(doctor)/doctor/dashboard/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/(doctor)/doctor/patients/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/doctor/patients">> = Specific
+  const handler = {} as typeof import("../../app/(doctor)/doctor/patients/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/(doctor)/doctor/prescriptions/create/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/doctor/prescriptions/create">> = Specific
+  const handler = {} as typeof import("../../app/(doctor)/doctor/prescriptions/create/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/(doctor)/doctor/queue/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/doctor/queue">> = Specific
+  const handler = {} as typeof import("../../app/(doctor)/doctor/queue/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/(doctor)/doctor/settings/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/doctor/settings">> = Specific
+  const handler = {} as typeof import("../../app/(doctor)/doctor/settings/page.js")
   type __Check = __IsExpected<typeof handler>
   // @ts-ignore
   type __Unused = __Check
@@ -91,6 +172,15 @@ type LayoutConfig<Route extends LayoutRoutes = LayoutRoutes> = {
 {
   type __IsExpected<Specific extends LayoutConfig<"/">> = Specific
   const handler = {} as typeof import("../../app/(admin)/layout.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/(doctor)/layout.tsx
+{
+  type __IsExpected<Specific extends LayoutConfig<"/">> = Specific
+  const handler = {} as typeof import("../../app/(doctor)/layout.js")
   type __Check = __IsExpected<typeof handler>
   // @ts-ignore
   type __Unused = __Check

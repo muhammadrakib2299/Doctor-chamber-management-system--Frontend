@@ -1,13 +1,24 @@
 'use client';
 
 import { Bell, Search, Menu } from 'lucide-react';
+import { useUIStore } from '@/lib/store/uiStore';
 
 export default function DoctorHeader() {
+    const { toggleSidebar } = useUIStore();
+
     return (
-        <header className="flex h-16 items-center justify-between bg-white px-6 shadow-sm border-b">
+        <header className="flex h-16 items-center justify-between bg-white px-4 sm:px-6 shadow-sm border-b">
+
+            {/* Mobile Menu Toggle */}
+            <button
+                onClick={toggleSidebar}
+                className="mr-4 p-2 text-slate-600 hover:bg-slate-100 rounded-md md:hidden"
+            >
+                <Menu className="h-6 w-6" />
+            </button>
 
             {/* Search Bar - Patient Search */}
-            <div className="flex w-96 items-center rounded-lg bg-slate-100 px-4 py-2">
+            <div className="hidden sm:flex w-96 items-center rounded-lg bg-slate-100 px-4 py-2">
                 <Search className="h-5 w-5 text-slate-400" />
                 <input
                     type="text"
