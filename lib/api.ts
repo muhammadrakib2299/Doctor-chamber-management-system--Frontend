@@ -13,7 +13,7 @@ api.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
         // Only access localStorage in browser environment
         if (typeof window !== 'undefined') {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
             if (token) {
                 config.headers.Authorization = `Bearer ${token}`;
             }
@@ -36,6 +36,7 @@ api.interceptors.response.use(
                     // Unauthorized - clear token and redirect to login
                     if (typeof window !== 'undefined') {
                         localStorage.removeItem('token');
+                        sessionStorage.removeItem('token');
                         localStorage.removeItem('user');
                         window.location.href = '/auth/login';
                     }

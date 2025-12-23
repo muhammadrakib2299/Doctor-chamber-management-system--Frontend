@@ -24,8 +24,9 @@ export default function LoginPage() {
     } = useForm<LoginFormData>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
-            email: 'admin@medcore.com', // Pre-fill for demo convenience
-            password: 'password123'
+            email: '',
+            password: '',
+            rememberMe: true
         }
     });
 
@@ -38,7 +39,7 @@ export default function LoginPage() {
             });
 
             const { user, token } = response.data.data;
-            login(user, token);
+            login(user, token, data.rememberMe);
             toast.success(`Welcome back, ${user.name}!`);
 
             switch (user.role) {
@@ -145,7 +146,7 @@ export default function LoginPage() {
                             <div>
                                 <div className="flex items-center justify-between mb-1">
                                     <label className="block text-sm font-medium text-slate-700">Password</label>
-                                    <Link href="#" className="text-xs font-medium text-blue-600 hover:text-blue-500">
+                                    <Link href="/auth/forgot-password" className="text-xs font-medium text-blue-600 hover:text-blue-500">
                                         Forgot Password?
                                     </Link>
                                 </div>
@@ -168,6 +169,7 @@ export default function LoginPage() {
                             <input
                                 id="remember-me"
                                 type="checkbox"
+                                {...register('rememberMe')}
                                 className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                             />
                             <label htmlFor="remember-me" className="ml-2 block text-sm text-slate-600">
@@ -191,17 +193,28 @@ export default function LoginPage() {
                     </form>
 
                     <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 mt-6">
-                        <p className="text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wide">Demo Accounts</p>
-                        <div className="grid grid-cols-2 gap-4 text-xs">
-                            <div>
-                                <span className="font-medium text-slate-900">Admin</span>
-                                <p className="text-slate-500">admin@medcore.com</p>
-                                <p className="text-slate-400 hidden">password123</p>
+                        <p className="text-xs font-semibold text-slate-500 mb-3 uppercase tracking-wide text-center">Demo Accounts (For Testing)</p>
+                        <div className="space-y-3">
+                            <div className="flex items-center justify-between text-xs p-2 bg-white rounded border border-slate-100">
+                                <span className="font-semibold text-slate-700 w-16">Admin</span>
+                                <div className="text-right">
+                                    <p className="text-slate-600 font-medium">admin@gmail.com</p>
+                                    <p className="text-slate-400">password123</p>
+                                </div>
                             </div>
-                            <div>
-                                <span className="font-medium text-slate-900">Doctor</span>
-                                <p className="text-slate-500">doctor@medcore.com</p>
-                                <p className="text-slate-400 hidden">password123</p>
+                            <div className="flex items-center justify-between text-xs p-2 bg-white rounded border border-slate-100">
+                                <span className="font-semibold text-slate-700 w-16">Doctor</span>
+                                <div className="text-right">
+                                    <p className="text-slate-600 font-medium">doctor@gmail.com</p>
+                                    <p className="text-slate-400">password123</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center justify-between text-xs p-2 bg-white rounded border border-slate-100">
+                                <span className="font-semibold text-slate-700 w-16">Assistant</span>
+                                <div className="text-right">
+                                    <p className="text-slate-600 font-medium">assistant@gmail.com</p>
+                                    <p className="text-slate-400">password123</p>
+                                </div>
                             </div>
                         </div>
                     </div>
