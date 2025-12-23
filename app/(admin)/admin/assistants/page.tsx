@@ -13,7 +13,8 @@ import {
     Loader2,
     X,
     UserPlus,
-    ShieldCheck
+    ShieldCheck,
+    AlertTriangle
 } from 'lucide-react';
 import api from '@/lib/api';
 import { toast } from 'react-hot-toast';
@@ -42,6 +43,7 @@ export default function AssistantsList() {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [assistantToDelete, setAssistantToDelete] = useState<Assistant | null>(null);
     const [editingAssistant, setEditingAssistant] = useState<Assistant | null>(null);
     const [submitting, setSubmitting] = useState(false);
 
@@ -84,14 +86,18 @@ export default function AssistantsList() {
         fetchDoctors();
     }, []);
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this assistant?')) return;
+    const confirmDelete = async () => {
+        if (!assistantToDelete) return;
+        setSubmitting(true);
         try {
-            await api.delete(`/admin/assistants/${id}`);
-            toast.success('Assistant deleted');
+            await api.delete(`/admin/assistants/${assistantToDelete._id}`);
+            toast.success('Assistant deleted successfully');
+            setAssistantToDelete(null);
             fetchAssistants();
         } catch (error) {
             toast.error('Failed to delete assistant');
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -100,7 +106,7 @@ export default function AssistantsList() {
         setFormData({
             name: assistant.name,
             email: assistant.email,
-            password: '', // Don't show password or change unless wanted (backend logic handles partial updates)
+            password: '',
             phone: assistant.phone || '',
             doctorId: assistant.doctorId?._id || '',
             isActive: assistant.isActive
@@ -119,7 +125,6 @@ export default function AssistantsList() {
         setSubmitting(true);
         try {
             if (editingAssistant) {
-                // For update, we might not want to send password if it's empty
                 const payload = { ...formData };
                 if (!payload.password) delete (payload as any).password;
 
@@ -245,7 +250,7 @@ export default function AssistantsList() {
                                         <td className="px-8 py-6 text-right">
                                             <div className="flex items-center justify-end gap-2 text-right">
                                                 <button
-                                                    onClick={() => handleDelete(assistant._id)}
+                                                    onClick={() => setAssistantToDelete(assistant)}
                                                     className="p-2.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
                                                     title="Delete Assistant"
                                                 >
@@ -406,6 +411,45 @@ export default function AssistantsList() {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Custom Delete Confirmation Modal */}
+            {assistantToDelete && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+                    <div
+                        className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] animate-in fade-in duration-300"
+                        onClick={() => setAssistantToDelete(null)}
+                    />
+                    <div className="relative bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-300">
+                        <div className="p-8 text-center">
+                            <div className="mx-auto w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mb-6 shadow-sm">
+                                <AlertTriangle className="h-8 w-8 text-red-600" />
+                            </div>
+                            <h3 className="text-2xl font-bold text-slate-900 mb-2">Delete Account?</h3>
+                            <p className="text-slate-500 mb-8 leading-relaxed">
+                                You are about to delete <span className="font-bold text-slate-900">"{assistantToDelete.name}"</span>.
+                                This action will permanently remove their access to the portal.
+                            </p>
+
+                            <div className="flex flex-col gap-3">
+                                <button
+                                    disabled={submitting}
+                                    onClick={confirmDelete}
+                                    className="w-full py-3.5 rounded-2xl bg-red-600 text-white font-bold shadow-lg shadow-red-100 hover:bg-red-700 hover:shadow-red-200 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
+                                >
+                                    {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Trash2 className="h-5 w-5" />}
+                                    Yes, Delete Permanent
+                                </button>
+                                <button
+                                    onClick={() => setAssistantToDelete(null)}
+                                    className="w-full py-3.5 rounded-2xl bg-slate-100 text-slate-700 font-bold hover:bg-slate-200 transition-all active:scale-[0.98]"
+                                >
+                                    Cancel & Stay
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
