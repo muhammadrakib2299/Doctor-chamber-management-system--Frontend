@@ -6,6 +6,11 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
+    "/assistant/dashboard/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/assistant/dashboard/page.js"
+    ],
     "/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -21,20 +26,30 @@
       "static/chunks/main-app.js",
       "static/chunks/app/auth/login/page.js"
     ],
-    "/auth/forgot-password/page": [
+    "/(admin)/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/auth/forgot-password/page.js"
+      "static/chunks/app/(admin)/layout.js"
     ],
-    "/(doctor)/layout": [
+    "/(admin)/admin/dashboard/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(doctor)/layout.js"
+      "static/chunks/app/(admin)/admin/dashboard/page.js"
     ],
-    "/(doctor)/doctor/dashboard/page": [
+    "/(admin)/admin/assistants/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(doctor)/doctor/dashboard/page.js"
+      "static/chunks/app/(admin)/admin/assistants/page.js"
+    ],
+    "/(admin)/admin/doctors/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(admin)/admin/doctors/page.js"
+    ],
+    "/(admin)/admin/doctors/create/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(admin)/admin/doctors/create/page.js"
     ]
   }
 }
