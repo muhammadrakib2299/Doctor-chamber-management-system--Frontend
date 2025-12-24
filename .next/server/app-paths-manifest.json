@@ -1,7 +1,8 @@
 {
-  "/(admin)/admin/assistants/page": "app/(admin)/admin/assistants/page.js",
-  "/(admin)/admin/dashboard/page": "app/(admin)/admin/dashboard/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
   "/(admin)/admin/doctors/page": "app/(admin)/admin/doctors/page.js",
-  "/(admin)/admin/doctors/create/page": "app/(admin)/admin/doctors/create/page.js",
-  "/auth/login/page": "app/auth/login/page.js"
+  "/(admin)/admin/assistants/page": "app/(admin)/admin/assistants/page.js",
+  "/(admin)/admin/subscriptions/page": "app/(admin)/admin/subscriptions/page.js",
+  "/(admin)/admin/settings/page": "app/(admin)/admin/settings/page.js",
+  "/(admin)/admin/doctors/create/page": "app/(admin)/admin/doctors/create/page.js"
 }
