@@ -6,7 +6,7 @@ export interface Appointment {
     doctorId: string;
     appointmentDate: string;
     serialNumber: number;
-    status: 'waiting' | 'in_progress' | 'completed' | 'cancelled';
+    status: 'booked' | 'waiting' | 'in_progress' | 'completed' | 'cancelled';
     feeAmount: number;
     paymentStatus: 'pending' | 'paid';
 }
@@ -23,6 +23,12 @@ export interface CreateAppointmentData {
 }
 
 export const appointmentService = {
+    // Confirm patient arrival
+    confirmArrival: async (id: string) => {
+        const response = await api.put(`/appointments/${id}/confirm`);
+        return response.data;
+    },
+
     // Create new appointment
     createAppointment: async (data: CreateAppointmentData) => {
         const response = await api.post('/appointments', data);

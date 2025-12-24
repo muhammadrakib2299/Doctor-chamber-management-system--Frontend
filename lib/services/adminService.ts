@@ -26,9 +26,27 @@ export const adminService = {
         return response.data;
     },
 
+    // Get single doctor
+    getDoctor: async (id: string) => {
+        const response = await api.get(`/admin/doctors/${id}`);
+        return response.data;
+    },
+
     // Create new doctor
     createDoctor: async (data: any) => {
         const response = await api.post('/admin/doctors', data);
+        return response.data;
+    },
+
+    // Update doctor
+    updateDoctor: async (id: string, data: any) => {
+        const response = await api.put(`/admin/doctors/${id}`, data);
+        return response.data;
+    },
+
+    // Delete doctor
+    deleteDoctor: async (id: string) => {
+        const response = await api.delete(`/admin/doctors/${id}`);
         return response.data;
     },
 

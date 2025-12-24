@@ -31,15 +31,15 @@
       "static/chunks/main-app.js",
       "static/chunks/app/(admin)/admin/dashboard/page.js"
     ],
-    "/(admin)/admin/doctors/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(admin)/admin/doctors/page.js"
-    ],
     "/(admin)/admin/assistants/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/(admin)/admin/assistants/page.js"
+    ],
+    "/(admin)/admin/doctors/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(admin)/admin/doctors/page.js"
     ],
     "/(admin)/admin/subscriptions/page": [
       "static/chunks/webpack.js",
@@ -55,6 +55,41 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/(admin)/admin/doctors/create/page.js"
+    ],
+    "/(doctor)/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(doctor)/layout.js"
+    ],
+    "/(doctor)/doctor/dashboard/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(doctor)/doctor/dashboard/page.js"
+    ],
+    "/(doctor)/doctor/queue/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(doctor)/doctor/queue/page.js"
+    ],
+    "/(doctor)/doctor/prescriptions/create/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(doctor)/doctor/prescriptions/create/page.js"
+    ],
+    "/(doctor)/doctor/appointments/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(doctor)/doctor/appointments/page.js"
+    ],
+    "/(doctor)/doctor/patients/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(doctor)/doctor/patients/page.js"
+    ],
+    "/assistant/dashboard/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/assistant/dashboard/page.js"
     ]
   }
 }
