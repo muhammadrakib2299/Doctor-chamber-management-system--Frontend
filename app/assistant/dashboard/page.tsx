@@ -7,6 +7,7 @@ import PatientRegistrationForm from '@/components/assistant/PatientRegistrationF
 import SearchPatient from '@/components/assistant/SearchPatient';
 import QueueList from '@/components/assistant/QueueList';
 import AppointmentBookingModal from '@/components/assistant/AppointmentBookingModal';
+import PatientList from '@/components/assistant/PatientList';
 import { io } from 'socket.io-client';
 import toast from 'react-hot-toast';
 import {
@@ -26,6 +27,7 @@ import {
 export default function AssistantDashboard() {
     const { user } = useAuthStore();
     const [queue, setQueue] = useState<any[]>([]);
+    const [viewMode, setViewMode] = useState<'queue' | 'registry'>('queue');
     const [selectedPatient, setSelectedPatient] = useState<any>(null);
     const [showBookingModal, setShowBookingModal] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -171,10 +173,36 @@ export default function AssistantDashboard() {
                     </section>
                 </div>
 
-                {/* Right Panel: Active Queue */}
-                <div className="lg:col-span-8">
+                {/* Right Panel: Active Queue & Registry */}
+                <div className="lg:col-span-8 space-y-6">
+                    {/* View Switcher */}
+                    <div className="flex p-1 bg-slate-100/50 rounded-2xl w-fit">
+                        <button
+                            onClick={() => setViewMode('queue')}
+                            className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 ${viewMode === 'queue'
+                                ? 'bg-white text-blue-600 shadow-sm'
+                                : 'text-slate-400 hover:text-slate-600'
+                                }`}
+                        >
+                            Active Queue
+                        </button>
+                        <button
+                            onClick={() => setViewMode('registry')}
+                            className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 ${viewMode === 'registry'
+                                ? 'bg-white text-blue-600 shadow-sm'
+                                : 'text-slate-400 hover:text-slate-600'
+                                }`}
+                        >
+                            Patient Registry
+                        </button>
+                    </div>
+
                     <section className="animate-in slide-in-from-right duration-500">
-                        <QueueList queue={queue} setQueue={setQueue} />
+                        {viewMode === 'queue' ? (
+                            <QueueList queue={queue} setQueue={setQueue} />
+                        ) : (
+                            <PatientList refreshTrigger={refreshTrigger} />
+                        )}
                     </section>
                 </div>
             </div>

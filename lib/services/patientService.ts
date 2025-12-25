@@ -37,9 +37,20 @@ export const patientService = {
         return response.data;
     },
 
-    // Get all patients
     getPatients: async (params?: any) => {
         const response = await api.get('/patients', { params });
+        return response.data;
+    },
+
+    // Update patient
+    updatePatient: async (id: string, data: any) => {
+        const response = await api.put(`/patients/${id}`, data);
+        return response.data;
+    },
+
+    // Delete patient
+    deletePatient: async (id: string) => {
+        const response = await api.delete(`/patients/${id}`);
         return response.data;
     }
 };

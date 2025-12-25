@@ -29,11 +29,11 @@ const menuItems = [
     //     icon: Calendar,
     //     href: '/assistant/appointments',
     // },
-    // {
-    //     title: 'Patients',
-    //     icon: Users,
-    //     href: '/assistant/patients',
-    // },
+    {
+        title: 'Patients',
+        icon: Users,
+        href: '/assistant/patients',
+    },
 ];
 
 export default function AssistantSidebar() {

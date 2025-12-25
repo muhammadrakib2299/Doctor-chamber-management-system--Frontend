@@ -31,30 +31,20 @@
       "static/chunks/main-app.js",
       "static/chunks/app/(admin)/admin/dashboard/page.js"
     ],
-    "/(admin)/admin/assistants/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(admin)/admin/assistants/page.js"
-    ],
     "/(admin)/admin/doctors/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/(admin)/admin/doctors/page.js"
     ],
+    "/(admin)/admin/assistants/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(admin)/admin/assistants/page.js"
+    ],
     "/(admin)/admin/subscriptions/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/(admin)/admin/subscriptions/page.js"
-    ],
-    "/(admin)/admin/settings/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(admin)/admin/settings/page.js"
-    ],
-    "/(admin)/admin/doctors/create/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(admin)/admin/doctors/create/page.js"
     ],
     "/(doctor)/layout": [
       "static/chunks/webpack.js",
@@ -86,20 +76,20 @@
       "static/chunks/main-app.js",
       "static/chunks/app/(doctor)/doctor/patients/page.js"
     ],
-    "/assistant/dashboard/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/assistant/dashboard/page.js"
-    ],
     "/assistant/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/assistant/layout.js"
     ],
-    "/_not-found/page": [
+    "/assistant/dashboard/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/_not-found/page.js"
+      "static/chunks/app/assistant/dashboard/page.js"
+    ],
+    "/assistant/patients/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/assistant/patients/page.js"
     ]
   }
 }
