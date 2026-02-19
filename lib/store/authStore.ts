@@ -22,6 +22,18 @@ interface AuthState {
     updateUser: (user: User) => void;
 }
 
+// Helper to set/remove auth cookies for Next.js middleware
+function setAuthCookies(token: string, role: string) {
+    const maxAge = 7 * 24 * 60 * 60; // 7 days in seconds
+    document.cookie = `auth-token=${token}; path=/; max-age=${maxAge}; SameSite=Lax`;
+    document.cookie = `auth-role=${role}; path=/; max-age=${maxAge}; SameSite=Lax`;
+}
+
+function clearAuthCookies() {
+    document.cookie = 'auth-token=; path=/; max-age=0';
+    document.cookie = 'auth-role=; path=/; max-age=0';
+}
+
 export const useAuthStore = create<AuthState>()(
     persist(
         (set) => ({
@@ -38,6 +50,8 @@ export const useAuthStore = create<AuthState>()(
                         localStorage.removeItem('token');
                     }
                     localStorage.setItem('user', JSON.stringify(user));
+                    // Set cookies for Next.js middleware auth checks
+                    setAuthCookies(token, user.role);
                 }
                 set({ user, token, isAuthenticated: true });
             },
@@ -46,12 +60,18 @@ export const useAuthStore = create<AuthState>()(
                     localStorage.removeItem('token');
                     sessionStorage.removeItem('token');
                     localStorage.removeItem('user');
+                    clearAuthCookies();
                 }
                 set({ user: null, token: null, isAuthenticated: false });
             },
             updateUser: (user) => {
                 if (typeof window !== 'undefined') {
                     localStorage.setItem('user', JSON.stringify(user));
+                    // Update role cookie in case role changed
+                    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+                    if (token) {
+                        setAuthCookies(token, user.role);
+                    }
                 }
                 set({ user });
             },
