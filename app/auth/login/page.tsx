@@ -57,8 +57,10 @@ export default function LoginPage() {
             }
         } catch (error) {
             const err = error as AxiosError<{ message: string }>;
-            const message = err.response?.data?.message || 'Invalid credentials. Please try again.';
-            toast.error(message);
+            // Only show auth error if the server actually responded (network errors are handled by the interceptor)
+            if (err.response) {
+                toast.error(err.response.data?.message || 'Invalid credentials. Please try again.');
+            }
         } finally {
             setLoading(false);
         }
