@@ -48,6 +48,12 @@ export const patientService = {
         return response.data;
     },
 
+    // Get single patient
+    getPatient: async (id: string) => {
+        const response = await api.get(`/patients/${id}`);
+        return response.data;
+    },
+
     // Delete patient
     deletePatient: async (id: string) => {
         const response = await api.delete(`/patients/${id}`);

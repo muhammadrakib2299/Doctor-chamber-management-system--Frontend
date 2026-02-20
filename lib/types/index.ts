@@ -141,7 +141,20 @@ export interface QueueItem {
     feeType: 'new_patient' | 'old_patient';
     paymentStatus: 'pending' | 'paid' | 'refunded';
     paymentMethod: 'cash' | 'card' | 'mobile_banking';
-    status: 'booked' | 'waiting' | 'in_progress' | 'completed' | 'cancelled' | 'no_show';
+    status: string;
+    preAssessment?: {
+        bloodPressure?: string;
+        temperature?: string;
+        weight?: string;
+        height?: string;
+        pulse?: string;
+        chiefComplaint?: string;
+        notes?: string;
+    };
+    checkInTime?: string;
+    consultationStartTime?: string;
+    consultationEndTime?: string;
+    nextVisitDate?: string;
     createdAt: string;
     updatedAt: string;
 }

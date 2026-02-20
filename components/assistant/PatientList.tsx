@@ -167,7 +167,9 @@ export default function PatientList({ refreshTrigger = 0 }: PatientListProps) {
                                     </div>
                                     <div className="min-w-0 flex-1">
                                         <div className="flex items-center gap-2">
-                                            <h4 className="font-black text-slate-800 text-sm group-hover:text-blue-700 transition-colors truncate">{patient.name}</h4>
+                                            <Link href={`/assistant/patients/${patient._id}`} className="font-black text-slate-800 text-sm group-hover:text-blue-700 transition-colors truncate hover:underline">
+                                                {patient.name}
+                                            </Link>
                                             <span className="px-1.5 py-0.5 rounded-md bg-slate-100 text-[10px] font-bold text-slate-500 uppercase">{patient.patientId}</span>
                                         </div>
                                         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1">
@@ -177,6 +179,11 @@ export default function PatientList({ refreshTrigger = 0 }: PatientListProps) {
                                             {patient.address && (
                                                 <span className="flex items-center text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate max-w-[200px]" title={patient.address}>
                                                     <MapPin className="h-3 w-3 mr-1" /> {patient.address}
+                                                </span>
+                                            )}
+                                            {patient.totalVisits > 0 && (
+                                                <span className="flex items-center text-[10px] font-bold text-blue-500 uppercase tracking-wider">
+                                                    <Calendar className="h-3 w-3 mr-1" /> {patient.totalVisits} visits
                                                 </span>
                                             )}
                                         </div>

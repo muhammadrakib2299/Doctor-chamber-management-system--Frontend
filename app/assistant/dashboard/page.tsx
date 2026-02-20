@@ -18,10 +18,10 @@ import {
     RefreshCw,
     CalendarCheck,
     Stethoscope,
-    CalendarClock,
-    AlertCircle
+    Printer
 } from 'lucide-react';
 import { QueueItem, Patient } from '@/lib/types';
+import { generateToken } from '@/lib/utils/tokenPrint';
 
 export default function AssistantDashboard() {
     const { user } = useAuthStore();
@@ -70,7 +70,33 @@ export default function AssistantDashboard() {
         handlePatientSelect(patient);
     };
 
-    const handleBookingSuccess = () => {
+    const handleBookingSuccess = (data?: { serialNumber?: number; appointmentId?: string }) => {
+        if (data?.serialNumber && selectedPatient) {
+            toast((t) => (
+                <div className="flex items-center gap-3">
+                    <span className="text-sm font-bold">Serial #{data.serialNumber} booked!</span>
+                    <button
+                        onClick={() => {
+                            generateToken({
+                                serialNumber: data.serialNumber!,
+                                patientName: selectedPatient.name,
+                                patientId: selectedPatient.patientId,
+                                patientPhone: selectedPatient.phone,
+                                feeAmount: selectedPatient.patientType === 'new' ? (selectedPatient.newPatientFee || 500) : (selectedPatient.oldPatientFee || 300),
+                                paymentStatus: 'pending',
+                                bookingType: 'walk-in',
+                                date: new Date().toLocaleDateString(),
+                            });
+                            toast.dismiss(t.id);
+                        }}
+                        className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 flex items-center gap-1"
+                    >
+                        <Printer className="h-3 w-3" />
+                        Print Token
+                    </button>
+                </div>
+            ), { duration: 8000 });
+        }
         setShowBookingModal(false);
         setSelectedPatient(null);
         setRefreshTrigger(prev => prev + 1);

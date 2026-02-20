@@ -15,6 +15,8 @@ interface User {
         chamberAddress?: string;
     };
     doctorId?: string;
+    isActive?: boolean;
+    lastLogin?: string;
     subscription?: {
         plan: 'trial' | 'monthly' | 'quarterly' | 'yearly';
         startDate?: string;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuthStore } from '@/lib/store/authStore';
 import { appointmentService } from '@/lib/services/appointmentService';
 import toast from 'react-hot-toast';
@@ -8,20 +8,19 @@ import {
     X,
     Calendar,
     CreditCard,
-    User,
-    Type,
     ChevronRight,
     Loader2,
-    Briefcase,
     ShieldCheck,
-    Phone
+    Banknote,
+    Smartphone,
+    Wallet
 } from 'lucide-react';
 import { Patient } from '@/lib/types';
 
 interface Props {
     patient: Patient;
     onCancel: () => void;
-    onSuccess: () => void;
+    onSuccess: (data?: { serialNumber?: number; appointmentId?: string }) => void;
 }
 
 export default function AppointmentBookingModal({ patient, onCancel, onSuccess }: Props) {
@@ -34,8 +33,17 @@ export default function AppointmentBookingModal({ patient, onCancel, onSuccess }
     const [formData, setFormData] = useState({
         feeAmount: estimatedFee,
         bookingType: 'walk-in',
-        paymentStatus: 'pending'
+        paymentStatus: 'pending',
+        paymentMethod: 'cash',
     });
+
+    useEffect(() => {
+        const handleEsc = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') onCancel();
+        };
+        window.addEventListener('keydown', handleEsc);
+        return () => window.removeEventListener('keydown', handleEsc);
+    }, [onCancel]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -55,14 +63,17 @@ export default function AppointmentBookingModal({ patient, onCancel, onSuccess }
                 bookingType: formData.bookingType as 'walk-in' | 'phone',
                 feeAmount: formData.feeAmount,
                 feeType: (isNew ? 'new_patient' : 'old_patient') as 'new_patient' | 'old_patient',
-                paymentMethod: 'cash' as 'cash',
+                paymentMethod: formData.paymentMethod as 'cash' | 'card' | 'mobile_banking',
                 paymentStatus: formData.paymentStatus as 'pending' | 'paid',
-                status: 'booked' // Ensure it starts as booked per requirement
+                status: 'booked' as const,
             };
 
-            await appointmentService.createAppointment(payload);
+            const res = await appointmentService.createAppointment(payload);
             toast.success("Serial booked successfully!");
-            onSuccess();
+            onSuccess({
+                serialNumber: res.data?.serialNumber,
+                appointmentId: res.data?._id,
+            });
         } catch (error: unknown) {
             const err = error as { response?: { data?: { message?: string } } };
             toast.error(err.response?.data?.message || "Booking failed");
@@ -70,6 +81,12 @@ export default function AppointmentBookingModal({ patient, onCancel, onSuccess }
             setLoading(false);
         }
     };
+
+    const paymentMethods = [
+        { value: 'cash', label: 'Cash', icon: Banknote },
+        { value: 'card', label: 'Card', icon: CreditCard },
+        { value: 'mobile_banking', label: 'Mobile Banking', icon: Smartphone },
+    ];
 
     return (
         <div className="bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden max-w-lg w-full">
@@ -90,19 +107,20 @@ export default function AppointmentBookingModal({ patient, onCancel, onSuccess }
                         <h3 className="text-2xl font-black tracking-tight">{patient.name}</h3>
                         <div className="flex items-center gap-2 mt-1 opacity-70">
                             <span className="text-[10px] font-bold uppercase tracking-widest bg-white/20 px-2 py-0.5 rounded-md">ID: {patient.patientId}</span>
-                            <span className="text-[10px] font-bold uppercase tracking-widest bg-blue-500/40 px-2 py-0.5 rounded-md">{patient.patientType} CASE</span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest bg-blue-500/40 px-2 py-0.5 rounded-md">{patient.patientType || 'new'} CASE</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Modal Body */}
-            <form onSubmit={handleSubmit} className="p-8 space-y-8">
+            <form onSubmit={handleSubmit} className="p-8 space-y-6">
+                {/* Fee & Payment Status */}
                 <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Consultation Fee</label>
                         <div className="relative group">
-                            <CreditCard className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+                            <Wallet className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                             <input
                                 type="number"
                                 value={formData.feeAmount}
@@ -128,9 +146,40 @@ export default function AppointmentBookingModal({ patient, onCancel, onSuccess }
                     </div>
                 </div>
 
+                {/* Payment Method */}
+                {formData.paymentStatus === 'paid' && (
+                    <div className="p-5 bg-emerald-50/50 rounded-3xl border border-emerald-100/50">
+                        <h5 className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-3 flex items-center gap-2">
+                            <CreditCard className="h-3 w-3" /> Payment Method
+                        </h5>
+                        <div className="grid grid-cols-3 gap-3">
+                            {paymentMethods.map((method) => (
+                                <label
+                                    key={method.value}
+                                    className={`flex flex-col items-center p-3 rounded-2xl border-2 transition-all cursor-pointer ${formData.paymentMethod === method.value
+                                        ? 'bg-white border-emerald-500 shadow-lg shadow-emerald-100'
+                                        : 'border-transparent bg-white/50 hover:bg-white'
+                                        }`}
+                                >
+                                    <input
+                                        type="radio"
+                                        value={method.value}
+                                        checked={formData.paymentMethod === method.value}
+                                        onChange={() => setFormData({ ...formData, paymentMethod: method.value })}
+                                        className="sr-only"
+                                    />
+                                    <method.icon className={`h-5 w-5 mb-1.5 ${formData.paymentMethod === method.value ? 'text-emerald-600' : 'text-slate-400'}`} />
+                                    <span className="text-[10px] font-black text-slate-700">{method.label}</span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Booking Type */}
                 <div className="p-5 bg-blue-50/50 rounded-3xl border border-blue-100/50">
                     <h5 className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-3 flex items-center gap-2">
-                        <Calendar className="h-3 w-3" /> Booking Specification
+                        <Calendar className="h-3 w-3" /> Booking Type
                     </h5>
                     <div className="grid grid-cols-2 gap-4">
                         <label className={`flex flex-col p-4 rounded-2xl border-2 transition-all cursor-pointer ${formData.bookingType === 'walk-in' ? 'bg-white border-blue-500 shadow-lg shadow-blue-100' : 'border-transparent bg-slate-100/50 hover:bg-white'}`}>
@@ -146,7 +195,7 @@ export default function AppointmentBookingModal({ patient, onCancel, onSuccess }
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4 pt-4">
+                <div className="flex items-center gap-4 pt-2">
                     <button
                         type="button"
                         onClick={onCancel}

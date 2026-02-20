@@ -1,8 +1,33 @@
 {
-  "node_modules\\.pnpm\\next@15.5.12_react-dom@19.2.4_react@19.2.4__react@19.2.4\\node_modules\\next\\dist\\client\\dev\\hot-reloader\\app\\use-websocket.js -> @vercel/turbopack-ecmascript-runtime/browser/dev/hmr-client/hmr-client.ts": {
-    "id": "node_modules\\.pnpm\\next@15.5.12_react-dom@19.2.4_react@19.2.4__react@19.2.4\\node_modules\\next\\dist\\client\\dev\\hot-reloader\\app\\use-websocket.js -> @vercel/turbopack-ecmascript-runtime/browser/dev/hmr-client/hmr-client.ts",
+  "node_modules\\.pnpm\\jspdf@3.0.4\\node_modules\\jspdf\\dist\\jspdf.es.min.js -> canvg": {
+    "id": 75030,
     "files": [
-      "static/chunks/_app-pages-browser_node_modules_pnpm_next_15_5_12_react-dom_19_2_4_react_19_2_4__react_19_2_4-e9c8a6.js"
+      "static/chunks/badf541d.3d63dc47b0ef3cf2.js",
+      "static/chunks/8158.dcaa426db3eb5e92.js"
+    ]
+  },
+  "node_modules\\.pnpm\\jspdf@3.0.4\\node_modules\\jspdf\\dist\\jspdf.es.min.js -> dompurify": {
+    "id": 65141,
+    "files": [
+      "static/chunks/5141.1532bd926f375538.js"
+    ]
+  },
+  "node_modules\\.pnpm\\jspdf@3.0.4\\node_modules\\jspdf\\dist\\jspdf.es.min.js -> html2canvas": {
+    "id": 81615,
+    "files": [
+      "static/chunks/c132bf7d.a29679a058e24c9d.js"
+    ]
+  },
+  "node_modules\\.pnpm\\next@15.5.12_react-dom@19.2.4_react@19.2.4__react@19.2.4\\node_modules\\next\\dist\\client\\index.js -> ../pages/_app": {
+    "id": 39,
+    "files": [
+      "static/chunks/39.2f5afdccbb1cc5c9.js"
+    ]
+  },
+  "node_modules\\.pnpm\\next@15.5.12_react-dom@19.2.4_react@19.2.4__react@19.2.4\\node_modules\\next\\dist\\client\\index.js -> ../pages/_error": {
+    "id": 72562,
+    "files": [
+      "static/chunks/2562.291a057df34ed8a5.js"
     ]
   }
 }

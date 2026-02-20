@@ -8,7 +8,19 @@ import { patientService } from '@/lib/services/patientService';
 import { Patient } from '@/lib/types';
 import { useAuthStore } from '@/lib/store/authStore';
 import toast from 'react-hot-toast';
-import { UserPlus, Phone, User, Calendar, MapPin, ChevronRight, Loader2, Users } from 'lucide-react';
+import {
+    UserPlus,
+    Phone,
+    User,
+    Calendar,
+    MapPin,
+    ChevronRight,
+    Loader2,
+    Users,
+    Droplets,
+    ChevronDown,
+    ChevronUp
+} from 'lucide-react';
 
 const patientSchema = z.object({
     name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -16,6 +28,7 @@ const patientSchema = z.object({
     age: z.string().refine((val) => !isNaN(Number(val)), 'Age must be a number').transform((val) => parseInt(val, 10)),
     gender: z.enum(['male', 'female', 'other']),
     address: z.string().optional(),
+    bloodGroup: z.string().optional(),
 });
 
 interface PatientRegistrationFormProps {
@@ -25,12 +38,16 @@ interface PatientRegistrationFormProps {
 export default function PatientRegistrationForm({ onSuccess }: PatientRegistrationFormProps) {
     const { user } = useAuthStore();
     const [loading, setLoading] = useState(false);
+    const [showExtraFields, setShowExtraFields] = useState(false);
+    const [allergies, setAllergies] = useState('');
+    const [chronicConditions, setChronicConditions] = useState('');
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm({
         resolver: zodResolver(patientSchema),
         defaultValues: {
             gender: 'male' as const,
-            address: ''
+            address: '',
+            bloodGroup: '',
         }
     });
 
@@ -38,7 +55,6 @@ export default function PatientRegistrationForm({ onSuccess }: PatientRegistrati
         try {
             setLoading(true);
 
-            // Handle both _id and id for consistency
             const doctorId = user?.role === 'doctor'
                 ? (user.id || user._id)
                 : user?.doctorId;
@@ -48,16 +64,23 @@ export default function PatientRegistrationForm({ onSuccess }: PatientRegistrati
                 return;
             }
 
-            const payload = {
+            const payload: Record<string, unknown> = {
                 ...data,
                 doctorId,
-                newPatientFee: 500, // Default fees
-                oldPatientFee: 300
+                newPatientFee: 500,
+                oldPatientFee: 300,
             };
 
-            const res = await patientService.createPatient(payload);
+            if (data.bloodGroup) payload.bloodGroup = data.bloodGroup;
+            if (allergies.trim()) payload.allergies = allergies.split(',').map(a => a.trim()).filter(Boolean);
+            if (chronicConditions.trim()) payload.chronicConditions = chronicConditions.split(',').map(c => c.trim()).filter(Boolean);
+
+            const res = await patientService.createPatient(payload as unknown as Parameters<typeof patientService.createPatient>[0]);
             toast.success(`Patient registered! ID: ${res.data?.patientId || 'N/A'}`, { duration: 5000 });
             reset();
+            setAllergies('');
+            setChronicConditions('');
+            setShowExtraFields(false);
             if (onSuccess) onSuccess(res.data);
         } catch (error: unknown) {
             const err = error as { response?: { data?: { message?: string } } };
@@ -163,6 +186,66 @@ export default function PatientRegistrationForm({ onSuccess }: PatientRegistrati
                             ></textarea>
                         </div>
                     </div>
+
+                    {/* Toggle for extra medical fields */}
+                    <button
+                        type="button"
+                        onClick={() => setShowExtraFields(!showExtraFields)}
+                        className="w-full flex items-center justify-center gap-2 py-2 text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors"
+                    >
+                        {showExtraFields ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                        {showExtraFields ? 'Hide' : 'Show'} Medical Details (Optional)
+                    </button>
+
+                    {showExtraFields && (
+                        <div className="space-y-5 p-5 bg-slate-50/50 rounded-2xl border border-slate-100">
+                            {/* Blood Group */}
+                            <div className="group">
+                                <label className="block text-sm font-bold text-slate-700 mb-1.5 ml-1">Blood Group</label>
+                                <div className="relative">
+                                    <Droplets className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+                                    <select
+                                        {...register('bloodGroup')}
+                                        className="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-slate-200 bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium appearance-none"
+                                    >
+                                        <option value="">Select</option>
+                                        <option value="A+">A+</option>
+                                        <option value="A-">A-</option>
+                                        <option value="B+">B+</option>
+                                        <option value="B-">B-</option>
+                                        <option value="AB+">AB+</option>
+                                        <option value="AB-">AB-</option>
+                                        <option value="O+">O+</option>
+                                        <option value="O-">O-</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            {/* Allergies */}
+                            <div className="group">
+                                <label className="block text-sm font-bold text-slate-700 mb-1.5 ml-1">Allergies</label>
+                                <input
+                                    type="text"
+                                    value={allergies}
+                                    onChange={(e) => setAllergies(e.target.value)}
+                                    placeholder="Comma separated (e.g., Penicillin, Dust)"
+                                    className="w-full px-4 py-3.5 rounded-2xl border border-slate-200 bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium text-sm"
+                                />
+                            </div>
+
+                            {/* Chronic Conditions */}
+                            <div className="group">
+                                <label className="block text-sm font-bold text-slate-700 mb-1.5 ml-1">Chronic Conditions</label>
+                                <input
+                                    type="text"
+                                    value={chronicConditions}
+                                    onChange={(e) => setChronicConditions(e.target.value)}
+                                    placeholder="Comma separated (e.g., Diabetes, Hypertension)"
+                                    className="w-full px-4 py-3.5 rounded-2xl border border-slate-200 bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium text-sm"
+                                />
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 <div className="pt-4">

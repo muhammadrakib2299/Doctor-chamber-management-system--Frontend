@@ -1,0 +1,25 @@
+1:"$Sreact.fragment"
+2:I[34207,["929","static/chunks/929-5ad5789d3e1247f9.js","7177","static/chunks/app/layout-827e69a83da00185.js"],"default"]
+3:I[1409,[],""]
+4:I[1813,[],""]
+5:I[93602,["929","static/chunks/929-5ad5789d3e1247f9.js","7177","static/chunks/app/layout-827e69a83da00185.js"],"Toaster"]
+6:I[2328,[],"ClientSegmentRoot"]
+7:I[72224,["1716","static/chunks/1716-ed56095c0e3eb43d.js","7534","static/chunks/7534-5c4b66e764324eba.js","5826","static/chunks/5826-eb5c3407786eceeb.js","2474","static/chunks/2474-545322d717ece003.js","8006","static/chunks/app/assistant/layout-af54a3621d0a622f.js"],"default"]
+9:I[93688,[],"ClientPageRoot"]
+a:I[56909,["929","static/chunks/929-5ad5789d3e1247f9.js","9127","static/chunks/9127-005c3261bb772d3f.js","1695","static/chunks/1695-6d59e1b117f6ee1c.js","1747","static/chunks/app/assistant/settings/page-6b11d9183bc6b3d8.js"],"default"]
+d:I[13652,[],"OutletBoundary"]
+f:I[1293,[],"AsyncMetadataOutlet"]
+11:I[13652,[],"ViewportBoundary"]
+13:I[13652,[],"MetadataBoundary"]
+14:"$Sreact.suspense"
+16:I[10323,[],""]
+:HL["/_next/static/css/ad3ebec9d7ac225a.css","style"]
+0:{"P":null,"b":"36g2sIiOUQldKfzP8hZGj","p":"","c":["","assistant","settings"],"i":false,"f":[[["",{"children":["assistant",{"children":["settings",{"children":["__PAGE__",{}]}]}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/ad3ebec9d7ac225a.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":["$","body",null,{"className":"__variable_f367f3 font-sans antialiased min-h-screen bg-slate-50","children":[["$","$L2",null,{"children":["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}],["$","$L5",null,{"position":"top-right"}]]}]}]]}],{"children":["assistant",["$","$1","c",{"children":[null,["$","$L6",null,{"Component":"$7","slots":{"children":["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]},"params":{},"promise":"$@8"}]]}],{"children":["settings",["$","$1","c",{"children":[null,["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["__PAGE__",["$","$1","c",{"children":[["$","$L9",null,{"Component":"$a","searchParams":{},"params":"$0:f:0:1:2:children:1:props:children:1:props:params","promises":["$@b","$@c"]}],null,["$","$Ld",null,{"children":["$Le",["$","$Lf",null,{"promise":"$@10"}]]}]]}],{},null,false]},null,false]},null,false]},null,false],["$","$1","h",{"children":[null,[["$","$L11",null,{"children":"$L12"}],null],["$","$L13",null,{"children":["$","div",null,{"hidden":true,"children":["$","$14",null,{"fallback":null,"children":"$L15"}]}]}]]}],false]],"m":"$undefined","G":["$16",[]],"s":false,"S":true}
+8:"$0:f:0:1:2:children:1:props:children:1:props:params"
+b:{}
+c:"$0:f:0:1:2:children:1:props:children:1:props:params"
+12:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+e:null
+17:I[91349,[],"IconMark"]
+10:{"metadata":[["$","title","0",{"children":"MedCore - Doctor Chamber Management"}],["$","meta","1",{"name":"description","content":"Comprehensive management system for doctors and assistants"}],["$","link","2",{"rel":"icon","href":"/favicon.ico","type":"image/x-icon","sizes":"16x16"}],["$","$L17","3",{}]],"error":null,"digest":"$undefined"}
+15:"$10:metadata"

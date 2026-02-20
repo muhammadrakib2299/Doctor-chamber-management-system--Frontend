@@ -28,8 +28,9 @@ export interface CreateAppointmentData {
     bookingType: 'phone' | 'walk-in';
     feeAmount: number;
     feeType: 'new_patient' | 'old_patient';
-    paymentMethod: 'cash';
+    paymentMethod: 'cash' | 'card' | 'mobile_banking';
     paymentStatus: 'pending' | 'paid';
+    status?: 'booked';
 }
 
 export interface AppointmentListParams {

@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { adminService } from '@/lib/services/adminService';
 import toast from 'react-hot-toast';
-import { ArrowLeft, User, Mail, Phone, Lock, Stethoscope, Award, CreditCard, Calendar, Plus } from 'lucide-react';
+import { ArrowLeft, User, Mail, Phone, Lock, Stethoscope, Award, CreditCard, Calendar, Plus, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 const doctorSchema = z.object({

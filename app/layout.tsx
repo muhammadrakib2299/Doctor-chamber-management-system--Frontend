@@ -22,7 +22,7 @@ export default function RootLayout({
         <ErrorBoundary>
           {children}
         </ErrorBoundary>
-        <Toaster position="top-right" containerProps={{ 'aria-live': 'polite' } as any} />
+        <Toaster position="top-right" />
       </body>
     </html>
   );
