@@ -1,26 +1,7 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
   "/page": "app/page.js",
-  "/(admin)/admin/dashboard/page": "app/(admin)/admin/dashboard/page.js",
-  "/(admin)/admin/assistants/page": "app/(admin)/admin/assistants/page.js",
-  "/(admin)/admin/doctors/create/page": "app/(admin)/admin/doctors/create/page.js",
-  "/(admin)/admin/settings/page": "app/(admin)/admin/settings/page.js",
-  "/(doctor)/dashboard/page": "app/(doctor)/dashboard/page.js",
-  "/(admin)/admin/subscriptions/page": "app/(admin)/admin/subscriptions/page.js",
-  "/(admin)/admin/doctors/page": "app/(admin)/admin/doctors/page.js",
-  "/(doctor)/doctor/appointments/page": "app/(doctor)/doctor/appointments/page.js",
-  "/(doctor)/doctor/dashboard/page": "app/(doctor)/doctor/dashboard/page.js",
-  "/(doctor)/doctor/patients/page": "app/(doctor)/doctor/patients/page.js",
-  "/(doctor)/doctor/prescriptions/create/page": "app/(doctor)/doctor/prescriptions/create/page.js",
-  "/(doctor)/doctor/queue/page": "app/(doctor)/doctor/queue/page.js",
-  "/(doctor)/doctor/settings/page": "app/(doctor)/doctor/settings/page.js",
-  "/assistant/dashboard/page": "app/assistant/dashboard/page.js",
-  "/assistant/patients/page": "app/assistant/patients/page.js",
-  "/assistant/reports/page": "app/assistant/reports/page.js",
-  "/assistant/settings/page": "app/assistant/settings/page.js",
-  "/auth/forgot-password/page": "app/auth/forgot-password/page.js",
-  "/assistant/patients/[id]/page": "app/assistant/patients/[id]/page.js",
   "/auth/login/page": "app/auth/login/page.js",
-  "/assistant/appointments/page": "app/assistant/appointments/page.js"
+  "/assistant/dashboard/page": "app/assistant/dashboard/page.js",
+  "/assistant/patients/page": "app/assistant/patients/page.js"
 }

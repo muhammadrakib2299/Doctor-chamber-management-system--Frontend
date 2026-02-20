@@ -1,33 +1,38 @@
 {
   "node_modules\\.pnpm\\jspdf@3.0.4\\node_modules\\jspdf\\dist\\jspdf.es.min.js -> canvg": {
-    "id": 75030,
+    "id": "node_modules\\.pnpm\\jspdf@3.0.4\\node_modules\\jspdf\\dist\\jspdf.es.min.js -> canvg",
     "files": [
-      "static/chunks/badf541d.3d63dc47b0ef3cf2.js",
-      "static/chunks/8158.dcaa426db3eb5e92.js"
+      "static/chunks/_app-pages-browser_node_modules_pnpm_canvg_3_0_11_node_modules_canvg_lib_index_es_js.js"
     ]
   },
   "node_modules\\.pnpm\\jspdf@3.0.4\\node_modules\\jspdf\\dist\\jspdf.es.min.js -> dompurify": {
-    "id": 65141,
+    "id": "node_modules\\.pnpm\\jspdf@3.0.4\\node_modules\\jspdf\\dist\\jspdf.es.min.js -> dompurify",
     "files": [
-      "static/chunks/5141.1532bd926f375538.js"
+      "static/chunks/_app-pages-browser_node_modules_pnpm_dompurify_3_3_1_node_modules_dompurify_dist_purify_es_mjs.js"
     ]
   },
   "node_modules\\.pnpm\\jspdf@3.0.4\\node_modules\\jspdf\\dist\\jspdf.es.min.js -> html2canvas": {
-    "id": 81615,
+    "id": "node_modules\\.pnpm\\jspdf@3.0.4\\node_modules\\jspdf\\dist\\jspdf.es.min.js -> html2canvas",
     "files": [
-      "static/chunks/c132bf7d.a29679a058e24c9d.js"
+      "static/chunks/_app-pages-browser_node_modules_pnpm_html2canvas_1_4_1_node_modules_html2canvas_dist_html2canvas_js.js"
+    ]
+  },
+  "node_modules\\.pnpm\\next@15.5.12_react-dom@19.2.4_react@19.2.4__react@19.2.4\\node_modules\\next\\dist\\client\\dev\\hot-reloader\\app\\use-websocket.js -> @vercel/turbopack-ecmascript-runtime/browser/dev/hmr-client/hmr-client.ts": {
+    "id": "node_modules\\.pnpm\\next@15.5.12_react-dom@19.2.4_react@19.2.4__react@19.2.4\\node_modules\\next\\dist\\client\\dev\\hot-reloader\\app\\use-websocket.js -> @vercel/turbopack-ecmascript-runtime/browser/dev/hmr-client/hmr-client.ts",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_pnpm_next_15_5_12_react-dom_19_2_4_react_19_2_4__react_19_2_4-e9c8a6.js"
     ]
   },
   "node_modules\\.pnpm\\next@15.5.12_react-dom@19.2.4_react@19.2.4__react@19.2.4\\node_modules\\next\\dist\\client\\index.js -> ../pages/_app": {
-    "id": 39,
+    "id": "node_modules\\.pnpm\\next@15.5.12_react-dom@19.2.4_react@19.2.4__react@19.2.4\\node_modules\\next\\dist\\client\\index.js -> ../pages/_app",
     "files": [
-      "static/chunks/39.2f5afdccbb1cc5c9.js"
+      "static/chunks/_pages-dir-browser_node_modules_pnpm_next_15_5_12_react-dom_19_2_4_react_19_2_4__react_19_2_4-9055ba.js"
     ]
   },
   "node_modules\\.pnpm\\next@15.5.12_react-dom@19.2.4_react@19.2.4__react@19.2.4\\node_modules\\next\\dist\\client\\index.js -> ../pages/_error": {
-    "id": 72562,
+    "id": "node_modules\\.pnpm\\next@15.5.12_react-dom@19.2.4_react@19.2.4__react@19.2.4\\node_modules\\next\\dist\\client\\index.js -> ../pages/_error",
     "files": [
-      "static/chunks/2562.291a057df34ed8a5.js"
+      "static/chunks/_pages-dir-browser_node_modules_pnpm_next_15_5_12_react-dom_19_2_4_react_19_2_4__react_19_2_4-423339.js"
     ]
   }
 }
