@@ -73,7 +73,7 @@ export default function DoctorSidebar() {
                 {/* Brand */}
                 <div className="flex h-16 items-center justify-between border-b border-slate-800 px-6">
                     <div className="flex items-center">
-                        <Stethoscope className="mr-2 h-6 w-6 text-green-500" />
+                        <Stethoscope className="mr-2 h-6 w-6 text-blue-400" />
                         <span className="text-lg font-bold">Doctor Portal</span>
                     </div>
                     <button onClick={closeSidebar} className="md:hidden text-slate-400 hover:text-white">
@@ -89,11 +89,11 @@ export default function DoctorSidebar() {
                             <Link
                                 key={item.href}
                                 href={item.href}
-                                onClick={closeSidebar} // Close on nav for mobile
+                                onClick={closeSidebar}
                                 className={cn(
                                     'group flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
                                     isActive
-                                        ? 'bg-green-600 text-white'
+                                        ? 'bg-blue-600 text-white'
                                         : 'text-slate-400 hover:bg-slate-800 hover:text-white'
                                 )}
                             >
@@ -112,7 +112,7 @@ export default function DoctorSidebar() {
                 {/* User Profile */}
                 <div className="border-t border-slate-800 p-4">
                     <div className="mb-4 flex items-center">
-                        <div className="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center text-sm font-bold text-white">
+                        <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-sm font-bold text-white">
                             {user?.name?.charAt(0) || 'D'}
                         </div>
                         <div className="ml-3 overflow-hidden">

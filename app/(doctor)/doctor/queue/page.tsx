@@ -10,20 +10,19 @@ import {
     User,
     ArrowRight,
     Pause,
-    Play,
-    CheckCircle,
-    UserMinus,
     Loader2,
     RefreshCw,
-    Activity,
-    WifiOff
+    WifiOff,
+    FileText,
+    UserX,
 } from 'lucide-react';
 import Link from 'next/link';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
+import { QueueItem } from '@/lib/types';
 
 export default function DoctorQueuePage() {
     const { user } = useAuthStore();
-    const [queue, setQueue] = useState<any[]>([]);
+    const [queue, setQueue] = useState<QueueItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [socketError, setSocketError] = useState(false);
@@ -109,168 +108,171 @@ export default function DoctorQueuePage() {
     if (loading) {
         return (
             <div className="flex h-[60vh] items-center justify-center">
-                <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
+                <div className="text-center space-y-3">
+                    <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto" />
+                    <p className="text-sm text-slate-500">Loading queue...</p>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="space-y-10 pb-20">
+        <div className="space-y-6 pb-20">
             {/* Socket connection error banner */}
             {socketError && (
-                <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-2xl text-amber-800">
+                <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl text-amber-800">
                     <WifiOff className="h-5 w-5 flex-shrink-0" />
                     <div className="flex-1">
-                        <p className="text-sm font-bold">Real-time connection lost</p>
+                        <p className="text-sm font-semibold">Real-time connection lost</p>
                         <p className="text-xs text-amber-600">Queue updates may be delayed. Data will sync on refresh.</p>
                     </div>
                     <button
                         onClick={fetchQueue}
-                        className="px-4 py-2 bg-amber-100 hover:bg-amber-200 rounded-xl text-xs font-bold uppercase tracking-widest transition-colors"
+                        className="px-4 py-2 bg-amber-100 hover:bg-amber-200 rounded-lg text-xs font-semibold transition-colors"
                     >
                         Refresh
                     </button>
                 </div>
             )}
 
-            {/* Page Header Area */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            {/* Page Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight">Clinical Live Queue</h1>
-                    <p className="text-slate-500 font-bold mt-1">Real-time patient flow management</p>
+                    <h1 className="text-2xl font-bold text-slate-900">Patient Queue</h1>
+                    <p className="text-sm text-slate-500 mt-1">Real-time patient flow</p>
                 </div>
                 <div className="flex items-center gap-3">
                     <button
                         onClick={fetchQueue}
-                        className={`flex items-center gap-2 px-5 py-3 rounded-2xl bg-white border border-slate-200 text-slate-600 font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm ${refreshing ? 'opacity-50' : ''}`}
+                        disabled={refreshing}
+                        className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors shadow-sm ${refreshing ? 'opacity-50' : ''}`}
                         aria-label="Refresh queue"
                     >
                         <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-                        Sync System
+                        Refresh
                     </button>
-                    <div className="px-5 py-3 rounded-2xl bg-emerald-500 text-white font-black text-[10px] uppercase tracking-widest shadow-xl shadow-emerald-500/20 flex items-center gap-2" aria-live="polite">
-                        <Activity className="h-4 w-4" />
-                        Live Monitoring
+                    <div className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-sm font-medium text-emerald-700" aria-live="polite">
+                        <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                        </span>
+                        Live
                     </div>
                 </div>
             </div>
 
-            <div className="grid gap-10 lg:grid-cols-12 items-start">
-                {/* Current Active Patient Case */}
-                <div className="lg:col-span-8 space-y-6">
-                    <div className="flex items-center gap-3 ml-2">
-                        <Play className="h-5 w-5 text-blue-600 fill-blue-600" />
-                        <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">Active Consultation</h3>
-                    </div>
+            {/* Two-column layout */}
+            <div className="grid gap-6 lg:grid-cols-3 items-start">
+                {/* Active Consultation - Left 2/3 */}
+                <div className="lg:col-span-2 space-y-4">
+                    <h3 className="text-sm font-semibold text-slate-700">Active Consultation</h3>
 
                     {inProgressPatient ? (
-                        <div className="relative group overflow-hidden bg-white rounded-[2.5rem] border border-blue-100 shadow-2xl shadow-blue-500/10">
-                            <div className="absolute top-0 right-0 p-8">
-                                <span className="px-6 py-2 bg-blue-600 text-white font-black text-[10px] uppercase tracking-[0.2em] rounded-full shadow-lg">
-                                    Serial #{inProgressPatient.serialNumber}
-                                </span>
-                            </div>
-
-                            <div className="p-10">
-                                <div className="flex flex-col sm:flex-row gap-10 items-start">
-                                    <div className="h-28 w-28 rounded-[2rem] bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white shadow-xl shadow-blue-500/30">
-                                        <User className="h-12 w-12" />
+                        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+                            <div className="flex items-start gap-4">
+                                <div className="h-12 w-12 rounded-xl bg-blue-600 flex items-center justify-center text-lg font-bold text-white flex-shrink-0">
+                                    {inProgressPatient.patientId?.name?.charAt(0) || <User className="h-5 w-5" />}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <h2 className="text-lg font-bold text-slate-900 truncate">
+                                        {inProgressPatient.patientId?.name}
+                                    </h2>
+                                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1">
+                                        <span className="text-sm text-slate-500">
+                                            {inProgressPatient.patientId?.age} years
+                                        </span>
+                                        <span className="text-sm text-slate-500 capitalize">
+                                            {inProgressPatient.patientId?.gender}
+                                        </span>
+                                        <span className="text-sm text-slate-500">
+                                            Serial #{inProgressPatient.serialNumber}
+                                        </span>
+                                        <span className="text-sm text-slate-500">
+                                            ID: {inProgressPatient.patientId?.patientId}
+                                        </span>
                                     </div>
-
-                                    <div className="flex-1 space-y-6">
-                                        <div>
-                                            <h2 className="text-4xl font-black text-slate-900 leading-tight">
-                                                {inProgressPatient.patientId?.name}
-                                            </h2>
-                                            <div className="flex flex-wrap gap-3 mt-3">
-                                                <span className="px-4 py-1.5 bg-slate-50 text-slate-600 font-bold text-xs rounded-xl border border-slate-100">
-                                                    {inProgressPatient.patientId?.age} Years
-                                                </span>
-                                                <span className="px-4 py-1.5 bg-slate-50 text-slate-600 font-bold text-xs rounded-xl border border-slate-100 uppercase">
-                                                    {inProgressPatient.patientId?.gender}
-                                                </span>
-                                                <span className="px-4 py-1.5 bg-slate-50 text-slate-600 font-bold text-xs rounded-xl border border-slate-100">
-                                                    ID: {inProgressPatient.patientId?.patientId}
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex items-center gap-4 pt-4">
-                                            <Link
-                                                href="/doctor/prescriptions/create"
-                                                className="flex-1 px-8 py-5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-blue-500/20 transition-all active:scale-95 flex items-center justify-center gap-3"
-                                            >
-                                                <CheckCircle className="h-5 w-5" />
-                                                Complete & Prescribe
-                                            </Link>
-                                            <button
-                                                onClick={() => requestStatusChange(inProgressPatient._id, 'waiting', 'Pause consultation')}
-                                                className="p-5 bg-white border-2 border-slate-100 text-slate-400 hover:text-amber-500 hover:border-amber-100 rounded-2xl transition-all active:scale-95"
-                                                aria-label="Pause consultation"
-                                            >
-                                                <Pause className="h-6 w-6" />
-                                            </button>
-                                        </div>
+                                    <div className="inline-flex items-center gap-1.5 mt-2 text-xs font-medium text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full">
+                                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                                        In Progress
                                     </div>
                                 </div>
                             </div>
+
+                            <div className="flex items-center gap-3 mt-6 pt-5 border-t border-slate-100">
+                                <Link
+                                    href="/doctor/prescriptions/create"
+                                    className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold shadow-sm transition-colors"
+                                >
+                                    <FileText className="h-4 w-4" />
+                                    Write Prescription
+                                </Link>
+                                <button
+                                    onClick={() => requestStatusChange(inProgressPatient._id, 'waiting', 'Pause consultation')}
+                                    className="inline-flex items-center gap-2 px-5 py-3 bg-white border border-slate-200 text-slate-600 hover:text-amber-600 hover:border-amber-200 hover:bg-amber-50 rounded-xl text-sm font-medium transition-colors"
+                                    aria-label="Pause consultation"
+                                >
+                                    <Pause className="h-4 w-4" />
+                                    Pause
+                                </button>
+                            </div>
                         </div>
                     ) : (
-                        <div className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2.5rem] p-20 flex flex-col items-center justify-center text-center">
-                            <div className="h-20 w-20 bg-white rounded-3xl flex items-center justify-center text-slate-200 shadow-sm mb-6">
-                                <UserMinus className="h-10 w-10" />
+                        <div className="bg-white rounded-2xl border border-dashed border-slate-200 p-12 flex flex-col items-center justify-center text-center">
+                            <div className="h-14 w-14 bg-slate-50 rounded-xl flex items-center justify-center text-slate-300 mb-4">
+                                <UserX className="h-7 w-7" />
                             </div>
-                            <h3 className="text-xl font-black text-slate-900">No Patient in Room</h3>
-                            <p className="text-slate-400 font-bold mt-2 max-w-xs">Call a patient from the waiting list below to start a consultation.</p>
+                            <h3 className="text-base font-semibold text-slate-900">No active patient</h3>
+                            <p className="text-sm text-slate-500 mt-1 max-w-sm">
+                                Call a patient from the waiting list to begin consultation.
+                            </p>
                         </div>
                     )}
                 </div>
 
-                {/* Waiting Flow Panel */}
-                <div className="lg:col-span-4 space-y-6">
-                    <div className="flex items-center justify-between px-2">
-                        <div className="flex items-center gap-2">
-                            <Clock className="h-5 w-5 text-amber-500" />
-                            <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">Waiting Pipeline</h3>
-                        </div>
-                        <span className="px-3 py-1 bg-amber-50 text-amber-600 font-black text-[10px] uppercase rounded-lg border border-amber-100" aria-live="polite">
-                            {waitingQueue.length} Queue
+                {/* Waiting List - Right 1/3 */}
+                <div className="lg:col-span-1 space-y-4">
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                            <Clock className="h-4 w-4 text-slate-400" />
+                            Waiting List
+                        </h3>
+                        <span className="text-xs font-medium text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg" aria-live="polite">
+                            {waitingQueue.length} patient{waitingQueue.length !== 1 ? 's' : ''}
                         </span>
                     </div>
 
-                    <div className="bg-white rounded-[2rem] border border-slate-100 shadow-xl overflow-hidden divide-y divide-slate-50">
+                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden divide-y divide-slate-100">
                         {waitingQueue.length > 0 ? (
                             waitingQueue.map((patient) => (
-                                <div key={patient._id} className="p-6 hover:bg-blue-50/50 transition-all group overflow-hidden relative">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <div className="flex items-center gap-4">
-                                            <div className="h-12 w-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-900 font-black text-sm group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-500 transition-all shadow-sm">
-                                                {patient.serialNumber}
-                                            </div>
-                                            <div>
-                                                <h4 className="font-black text-slate-900 text-sm">{patient.patientId?.name}</h4>
-                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                                                    {patient.status === 'booked' ? 'Remote Entry' : 'Checked In'}
-                                                </p>
-                                            </div>
+                                <div key={patient._id} className="p-4 hover:bg-slate-50 transition-colors">
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-10 w-10 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-sm font-bold text-slate-700 flex-shrink-0">
+                                            {patient.serialNumber}
                                         </div>
-                                    </div>
-
-                                    <div className="flex items-center justify-end gap-3">
+                                        <div className="flex-1 min-w-0">
+                                            <h4 className="text-sm font-semibold text-slate-900 truncate">
+                                                {patient.patientId?.name}
+                                            </h4>
+                                            <p className="text-xs text-slate-500">
+                                                {patient.patientId?.age} yrs, {patient.patientId?.gender}
+                                                {patient.status === 'booked' ? ' - Booked' : ' - Checked in'}
+                                            </p>
+                                        </div>
                                         <button
                                             onClick={() => requestStatusChange(patient._id, 'in_progress', 'Start consultation')}
                                             disabled={!!inProgressPatient}
-                                            className="px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white disabled:opacity-30 disabled:hover:bg-blue-50 disabled:hover:text-blue-600 rounded-xl font-black text-[10px] uppercase tracking-[0.15em] transition-all flex items-center gap-2"
-                                            aria-label={`Start consultation for ${patient.patientId?.name}`}
+                                            className="inline-flex items-center gap-1.5 px-3 py-2 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white disabled:opacity-30 disabled:hover:bg-blue-50 disabled:hover:text-blue-600 rounded-lg text-xs font-semibold transition-colors flex-shrink-0"
+                                            aria-label={`Call patient ${patient.patientId?.name}`}
                                         >
-                                            Start Lab <ArrowRight className="h-3 w-3" />
+                                            Call Patient
+                                            <ArrowRight className="h-3 w-3" />
                                         </button>
                                     </div>
                                 </div>
                             ))
                         ) : (
-                            <div className="p-10 text-center">
-                                <p className="text-sm font-bold text-slate-300">Queue Cleared</p>
+                            <div className="p-8 text-center">
+                                <p className="text-sm text-slate-400">No patients waiting</p>
                             </div>
                         )}
                     </div>

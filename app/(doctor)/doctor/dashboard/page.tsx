@@ -7,21 +7,24 @@ import {
     Clock,
     CheckCircle,
     Play,
-    ClipboardList,
-    TrendingUp,
-    MoreHorizontal,
     Activity,
-    Loader2
+    Loader2,
+    CalendarDays,
+    User,
+    FileText,
+    ArrowRight,
+    Stethoscope,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/lib/store/authStore';
 import { appointmentService } from '@/lib/services/appointmentService';
 import { io } from 'socket.io-client';
 import toast from 'react-hot-toast';
+import { QueueItem } from '@/lib/types';
 
 export default function DoctorDashboard() {
     const { user } = useAuthStore();
-    const [queue, setQueue] = useState<any[]>([]);
+    const [queue, setQueue] = useState<QueueItem[]>([]);
     const [loading, setLoading] = useState(true);
 
     const doctorId = user?.role === 'doctor' ? (user.id || user._id) : user?.doctorId;
@@ -50,34 +53,42 @@ export default function DoctorDashboard() {
         return () => { socket.disconnect(); };
     }, [doctorId]);
 
+    const waiting = queue.filter(q => q.status === 'waiting' || q.status === 'booked');
+    const inProgress = queue.filter(q => q.status === 'in_progress');
+    const completed = queue.filter(q => q.status === 'completed');
+
     const stats = [
         {
             title: 'Waiting',
-            value: queue.filter(q => q.status === 'waiting' || q.status === 'booked').length,
-            icon: Users,
-            color: 'text-orange-600',
-            bg: 'bg-orange-50',
+            value: waiting.length,
+            icon: Clock,
+            color: 'text-amber-600',
+            bg: 'bg-amber-50',
+            border: 'border-amber-100',
         },
         {
-            title: 'Active Case',
-            value: queue.filter(q => q.status === 'in_progress').length,
+            title: 'In Progress',
+            value: inProgress.length,
             icon: Play,
             color: 'text-blue-600',
             bg: 'bg-blue-50',
+            border: 'border-blue-100',
         },
         {
             title: 'Completed',
-            value: queue.filter(q => q.status === 'completed').length,
+            value: completed.length,
             icon: CheckCircle,
             color: 'text-emerald-600',
             bg: 'bg-emerald-50',
+            border: 'border-emerald-100',
         },
         {
-            title: 'Patients Today',
+            title: 'Total Today',
             value: queue.length,
             icon: Activity,
-            color: 'text-purple-600',
-            bg: 'bg-purple-50',
+            color: 'text-violet-600',
+            bg: 'bg-violet-50',
+            border: 'border-violet-100',
         },
     ];
 
@@ -87,147 +98,176 @@ export default function DoctorDashboard() {
     if (loading) {
         return (
             <div className="flex h-[60vh] items-center justify-center">
-                <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
+                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
             </div>
         );
     }
 
     return (
-        <div className="space-y-10 pb-20">
-            {/* Professional Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-6 pb-16">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tight">
-                        Hello, Dr. {user?.name?.split(' ')[0]}
+                    <h1 className="text-2xl font-bold text-slate-900">
+                        Welcome, Dr. {user?.name?.split(' ')[0]}
                     </h1>
-                    <p className="text-slate-500 font-bold mt-1 uppercase tracking-widest text-[10px]">
-                        Medical Command Center • {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+                    <p className="text-sm text-slate-500 mt-1">
+                        {new Date().toLocaleDateString('en-US', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                        })}
                     </p>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex gap-3">
                     <Link
                         href="/doctor/queue"
-                        className="px-6 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-600 font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm"
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors shadow-sm"
                     >
+                        <CalendarDays className="h-4 w-4" />
                         Live Queue
                     </Link>
                     <Link
                         href="/doctor/queue"
-                        className="px-6 py-3.5 rounded-2xl bg-blue-600 text-white font-black text-[10px] uppercase tracking-widest shadow-xl shadow-blue-500/20 hover:bg-blue-700 transition-all active:scale-95 flex items-center gap-2"
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 text-sm font-medium text-white hover:bg-blue-700 transition-colors shadow-sm"
                     >
-                        <Play className="h-3.5 w-3.5 fill-white" /> Start Board
+                        <Play className="h-4 w-4 fill-white" />
+                        Start Consultation
                     </Link>
                 </div>
             </div>
 
-            {/* Dynamic Stats Grid */}
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Stats Row */}
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {stats.map((item) => (
-                    <div key={item.title} className="bg-white p-7 rounded-[2.5rem] border border-slate-100 shadow-sm group hover:scale-[1.02] transition-all duration-300">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className={cn("p-4 rounded-2xl shadow-sm", item.bg)}>
-                                <item.icon className={cn("h-7 w-7", item.color)} />
+                    <div
+                        key={item.title}
+                        className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm"
+                    >
+                        <div className="flex items-center gap-3 mb-3">
+                            <div className={cn('p-2.5 rounded-lg', item.bg, item.border, 'border')}>
+                                <item.icon className={cn('h-5 w-5', item.color)} />
                             </div>
-                            <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Real-time</span>
+                            <span className="text-sm font-medium text-slate-500">{item.title}</span>
                         </div>
-                        <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{item.title}</h3>
-                        <p className="text-4xl font-black text-slate-900">{item.value}</p>
+                        <p className="text-3xl font-bold text-slate-900">{item.value}</p>
                     </div>
                 ))}
             </div>
 
-            <div className="grid gap-10 lg:grid-cols-3">
-                {/* Active Consultation Panel */}
-                <div className="lg:col-span-2 space-y-6">
-                    <div className="flex items-center gap-3 ml-2">
-                        <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                        <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">Live Consultation</h3>
+            {/* Two-Column Layout */}
+            <div className="grid gap-6 lg:grid-cols-3">
+                {/* Current Patient */}
+                <div className="lg:col-span-2 space-y-3">
+                    <div className="flex items-center gap-2 px-1">
+                        <Stethoscope className="h-4 w-4 text-slate-400" />
+                        <h2 className="text-sm font-semibold text-slate-700">Current Patient</h2>
                     </div>
 
-                    <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-2xl shadow-slate-200/50 overflow-hidden relative">
+                    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                         {currentPatient ? (
-                            <div className="p-10">
-                                <div className="absolute top-8 right-8">
-                                    <span className="px-6 py-2 bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest rounded-full shadow-lg">
-                                        Active Case
-                                    </span>
-                                </div>
-
-                                <div className="flex flex-col sm:flex-row gap-10 items-start">
-                                    <div className="h-24 w-24 rounded-[2rem] bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-inner">
-                                        <Users className="h-10 w-10" />
+                            <div className="p-6">
+                                <div className="flex flex-col sm:flex-row gap-6 items-start">
+                                    <div className="h-16 w-16 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center flex-shrink-0">
+                                        <User className="h-7 w-7 text-blue-600" />
                                     </div>
-                                    <div className="flex-1 space-y-6">
-                                        <div>
-                                            <h2 className="text-4xl font-black text-slate-900 leading-none mb-4">{currentPatient.patientId?.name}</h2>
-                                            <div className="flex flex-wrap gap-2">
-                                                <span className="px-4 py-1.5 bg-slate-50 text-slate-600 font-bold text-[10px] rounded-xl uppercase tracking-wider border border-slate-100">
-                                                    {currentPatient.patientId?.age}Y • {currentPatient.patientId?.gender}
-                                                </span>
-                                                <span className="px-4 py-1.5 bg-blue-50 text-blue-600 font-bold text-[10px] rounded-xl uppercase tracking-wider border border-blue-100">
-                                                    Serial #{currentPatient.serialNumber}
-                                                </span>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-start justify-between gap-4 mb-3">
+                                            <div>
+                                                <h3 className="text-lg font-bold text-slate-900">
+                                                    {currentPatient.patientId?.name}
+                                                </h3>
+                                                <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                                                    <span className="inline-flex items-center px-2.5 py-1 bg-slate-50 text-slate-600 text-sm font-medium rounded-lg border border-slate-100">
+                                                        {currentPatient.patientId?.age} yrs, {currentPatient.patientId?.gender}
+                                                    </span>
+                                                    <span className="inline-flex items-center px-2.5 py-1 bg-blue-50 text-blue-700 text-sm font-medium rounded-lg border border-blue-100">
+                                                        Serial #{currentPatient.serialNumber}
+                                                    </span>
+                                                    <span className="inline-flex items-center px-2.5 py-1 bg-slate-50 text-slate-500 text-sm font-medium rounded-lg border border-slate-100">
+                                                        ID: {currentPatient.patientId?.patientId}
+                                                    </span>
+                                                </div>
                                             </div>
+                                            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-lg border border-emerald-100 flex-shrink-0">
+                                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                                In Progress
+                                            </span>
                                         </div>
 
-                                        <div className="p-6 bg-amber-50 rounded-3xl border border-amber-100/50">
-                                            <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-1.5 leading-none">Primary Concern</p>
-                                            <p className="text-amber-900 font-extrabold text-lg">"{currentPatient.patientId?.problem || 'Clinical Examination'}"</p>
-                                        </div>
-
-                                        <div className="flex gap-4 pt-4">
+                                        <div className="pt-4 border-t border-slate-100">
                                             <Link
                                                 href="/doctor/prescriptions/create"
-                                                className="flex-1 px-8 py-5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-500/20 transition-all flex items-center justify-center gap-3"
+                                                className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium transition-colors shadow-sm"
                                             >
-                                                <ClipboardList className="h-5 w-5" />
-                                                Prescribe Meds
+                                                <FileText className="h-4 w-4" />
+                                                Write Prescription
                                             </Link>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         ) : (
-                            <div className="p-20 flex flex-col items-center justify-center text-center">
-                                <Activity className="h-16 w-16 text-slate-100 mb-6" />
-                                <h3 className="text-xl font-black text-slate-900 tracking-tight">Consultation Room Empty</h3>
-                                <p className="text-slate-400 font-bold mt-2 max-w-xs">No active appointment. Check the queue to call the next patient.</p>
-                                <Link href="/doctor/queue" className="mt-8 px-8 py-4 bg-slate-900 text-white flex items-center gap-3 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-lg shadow-slate-200">
-                                    Call Next Patient
+                            <div className="p-12 flex flex-col items-center justify-center text-center">
+                                <div className="h-14 w-14 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center mb-4">
+                                    <User className="h-6 w-6 text-slate-300" />
+                                </div>
+                                <h3 className="text-base font-semibold text-slate-900">No active patient</h3>
+                                <p className="text-sm text-slate-500 mt-1 max-w-sm">
+                                    No consultation in progress. Go to the queue to call the next patient.
+                                </p>
+                                <Link
+                                    href="/doctor/queue"
+                                    className="mt-5 inline-flex items-center gap-2 px-4 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-medium hover:bg-slate-800 transition-colors shadow-sm"
+                                >
+                                    <Play className="h-4 w-4 fill-white" />
+                                    Go to Queue
                                 </Link>
                             </div>
                         )}
                     </div>
                 </div>
 
-                {/* Vertical Up Next Section */}
-                <div className="space-y-6">
-                    <div className="flex items-center justify-between px-2">
-                        <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">Waiting List</h3>
-                        <Link href="/doctor/queue" className="text-[10px] font-black text-blue-600 uppercase tracking-widest hover:underline">View All</Link>
+                {/* Waiting List */}
+                <div className="space-y-3">
+                    <div className="flex items-center justify-between px-1">
+                        <div className="flex items-center gap-2">
+                            <Users className="h-4 w-4 text-slate-400" />
+                            <h2 className="text-sm font-semibold text-slate-700">Waiting List</h2>
+                        </div>
+                        <Link
+                            href="/doctor/queue"
+                            className="text-sm font-medium text-blue-600 hover:text-blue-700 inline-flex items-center gap-1"
+                        >
+                            View all
+                            <ArrowRight className="h-3.5 w-3.5" />
+                        </Link>
                     </div>
 
-                    <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-xl overflow-hidden divide-y divide-slate-50">
+                    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden divide-y divide-slate-100">
                         {upNext.length > 0 ? (
                             upNext.map((patient) => (
-                                <div key={patient._id} className="p-5 flex items-center justify-between hover:bg-slate-50 transition-all group">
-                                    <div className="flex items-center gap-4">
-                                        <div className="h-10 w-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center font-black text-slate-900 text-xs shadow-sm group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-500 transition-all">
-                                            {patient.serialNumber}
-                                        </div>
-                                        <div>
-                                            <p className="text-xs font-black text-slate-900 leading-none mb-1 group-hover:text-blue-700">{patient.patientId?.name}</p>
-                                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Checked in • 15:30</p>
-                                        </div>
+                                <div
+                                    key={patient._id}
+                                    className="px-4 py-3.5 flex items-center gap-3 hover:bg-slate-50 transition-colors"
+                                >
+                                    <div className="h-9 w-9 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center font-semibold text-slate-700 text-sm flex-shrink-0">
+                                        {patient.serialNumber}
                                     </div>
-                                    <button className="p-2 text-slate-300 hover:text-slate-600 transition-colors">
-                                        <MoreHorizontal className="h-4 w-4" />
-                                    </button>
+                                    <div className="min-w-0">
+                                        <p className="text-sm font-medium text-slate-900 truncate">
+                                            {patient.patientId?.name}
+                                        </p>
+                                        <p className="text-xs text-slate-500">
+                                            {patient.patientId?.age} yrs, {patient.patientId?.gender}
+                                        </p>
+                                    </div>
                                 </div>
                             ))
                         ) : (
-                            <div className="p-10 text-center">
-                                <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em]">Queue Empty</p>
+                            <div className="p-8 text-center">
+                                <p className="text-sm text-slate-400">No patients waiting</p>
                             </div>
                         )}
                     </div>
