@@ -6,11 +6,12 @@ import { appointmentService } from '@/lib/services/appointmentService';
 import CreatePrescription from '@/components/doctor/CreatePrescription';
 import { io } from 'socket.io-client';
 import toast from 'react-hot-toast';
+import { QueueItem } from '@/lib/types';
 
 export default function DoctorDashboard() {
     const { user } = useAuthStore();
-    const [queue, setQueue] = useState<any[]>([]);
-    const [currentPatient, setCurrentPatient] = useState<any>(null); // The patient currently being treated
+    const [queue, setQueue] = useState<QueueItem[]>([]);
+    const [currentPatient, setCurrentPatient] = useState<QueueItem | null>(null); // The patient currently being treated
     const [showPrescriptionForm, setShowPrescriptionForm] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -22,7 +23,6 @@ export default function DoctorDashboard() {
                 const res = await appointmentService.getTodayQueue(user.id);
                 setQueue(res.data);
             } catch (error) {
-                console.error("Failed to fetch queue");
             }
         };
         fetchQueue();
@@ -46,7 +46,7 @@ export default function DoctorDashboard() {
         };
     }, [user]);
 
-    const startConsultation = async (appointment: any) => {
+    const startConsultation = async (appointment: QueueItem) => {
         try {
             // Update status to in_progress
             await appointmentService.updateAppointment(appointment._id, { status: 'in_progress' });

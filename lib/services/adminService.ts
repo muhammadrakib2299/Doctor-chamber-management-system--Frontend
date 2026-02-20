@@ -21,7 +21,7 @@ export interface Doctor {
 
 export const adminService = {
     // Get all doctors (with pagination & filtering)
-    getDoctors: async (params?: any) => {
+    getDoctors: async (params?: Record<string, string>) => {
         const response = await api.get('/admin/doctors', { params });
         return response.data;
     },
@@ -33,13 +33,13 @@ export const adminService = {
     },
 
     // Create new doctor
-    createDoctor: async (data: any) => {
+    createDoctor: async (data: Record<string, unknown>) => {
         const response = await api.post('/admin/doctors', data);
         return response.data;
     },
 
     // Update doctor
-    updateDoctor: async (id: string, data: any) => {
+    updateDoctor: async (id: string, data: Record<string, unknown>) => {
         const response = await api.put(`/admin/doctors/${id}`, data);
         return response.data;
     },

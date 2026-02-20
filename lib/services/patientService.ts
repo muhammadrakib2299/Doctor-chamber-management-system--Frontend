@@ -37,13 +37,13 @@ export const patientService = {
         return response.data;
     },
 
-    getPatients: async (params?: any) => {
+    getPatients: async (params?: Record<string, string | number>) => {
         const response = await api.get('/patients', { params });
         return response.data;
     },
 
     // Update patient
-    updatePatient: async (id: string, data: any) => {
+    updatePatient: async (id: string, data: Partial<Omit<Patient, '_id' | 'patientId' | 'createdAt' | 'updatedAt'>>) => {
         const response = await api.put(`/patients/${id}`, data);
         return response.data;
     },

@@ -16,9 +16,10 @@ import {
     ShieldCheck,
     Phone
 } from 'lucide-react';
+import { Patient } from '@/lib/types';
 
 interface Props {
-    patient: any;
+    patient: Patient;
     onCancel: () => void;
     onSuccess: () => void;
 }
@@ -51,19 +52,20 @@ export default function AppointmentBookingModal({ patient, onCancel, onSuccess }
                 patientId: patient._id,
                 doctorId,
                 appointmentDate: new Date().toISOString(),
-                bookingType: formData.bookingType as any,
+                bookingType: formData.bookingType as 'walk-in' | 'phone',
                 feeAmount: formData.feeAmount,
                 feeType: (isNew ? 'new_patient' : 'old_patient') as 'new_patient' | 'old_patient',
                 paymentMethod: 'cash' as 'cash',
-                paymentStatus: formData.paymentStatus as any,
+                paymentStatus: formData.paymentStatus as 'pending' | 'paid',
                 status: 'booked' // Ensure it starts as booked per requirement
             };
 
             await appointmentService.createAppointment(payload);
             toast.success("Serial booked successfully!");
             onSuccess();
-        } catch (error: any) {
-            toast.error(error.response?.data?.message || "Booking failed");
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: { message?: string } } };
+            toast.error(err.response?.data?.message || "Booking failed");
         } finally {
             setLoading(false);
         }
@@ -76,6 +78,7 @@ export default function AppointmentBookingModal({ patient, onCancel, onSuccess }
                 <button
                     onClick={onCancel}
                     className="absolute top-6 right-6 p-2 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-md transition-all"
+                    aria-label="Close booking modal"
                 >
                     <X className="h-5 w-5" />
                 </button>

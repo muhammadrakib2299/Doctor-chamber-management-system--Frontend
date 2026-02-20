@@ -11,11 +11,12 @@ import { prescriptionSchema, type PrescriptionFormData } from '@/lib/validations
 import { appointmentService } from '@/lib/services/appointmentService';
 import { prescriptionService } from '@/lib/services/prescriptionService';
 import { useAuthStore } from '@/lib/store/authStore';
+import { QueueItem } from '@/lib/types';
 
 export default function CreatePrescriptionPage() {
     const [loading, setLoading] = useState(false);
     const [initialLoading, setInitialLoading] = useState(true);
-    const [activeAppointment, setActiveAppointment] = useState<any>(null);
+    const [activeAppointment, setActiveAppointment] = useState<QueueItem | null>(null);
     const router = useRouter();
     const { user } = useAuthStore();
 
@@ -27,7 +28,7 @@ export default function CreatePrescriptionPage() {
             if (!doctorId) return;
             try {
                 const res = await appointmentService.getTodayQueue(doctorId);
-                const current = res.data.find((q: any) => q.status === 'in_progress');
+                const current = res.data.find((q: QueueItem) => q.status === 'in_progress');
                 if (current) {
                     setActiveAppointment(current);
                     reset({
@@ -41,7 +42,6 @@ export default function CreatePrescriptionPage() {
                     toast.error("No active consultation found. Please 'Start Consultation' first.");
                 }
             } catch (error) {
-                console.error(error);
             } finally {
                 setInitialLoading(false);
             }
@@ -90,8 +90,8 @@ export default function CreatePrescriptionPage() {
                     name: m.name,
                     dosage: m.dosage,
                     duration: m.duration,
-                    timing: m.timing?.toLowerCase().replace(' ', '_') as any,
-                    type: 'tablet' as any
+                    timing: m.timing?.toLowerCase().replace(' ', '_') as 'before_meal' | 'after_meal' | 'with_meal' | 'empty_stomach' | 'as_needed',
+                    type: 'tablet' as 'tablet' | 'capsule' | 'syrup' | 'injection' | 'ointment' | 'drops' | 'other'
                 })),
                 advice: data.advice,
                 investigations: data.investigations ? data.investigations.split(',').map(s => s.trim()) : [],
@@ -101,16 +101,16 @@ export default function CreatePrescriptionPage() {
                 }
             };
 
-            await prescriptionService.createPrescription(payload as any);
+            await prescriptionService.createPrescription(payload);
             toast.success('Prescription generated successfully');
 
             // Mark appointment as completed
             await appointmentService.updateAppointment(activeAppointment._id, { status: 'completed' });
 
             router.push('/doctor/dashboard');
-        } catch (error: any) {
-            console.error(error);
-            toast.error(error.response?.data?.message || 'Error saving prescription');
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: { message?: string } } };
+            toast.error(err.response?.data?.message || 'Error saving prescription');
         } finally {
             setLoading(false);
         }
@@ -196,7 +196,7 @@ export default function CreatePrescriptionPage() {
                                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{vital.label}</span>
                             </div>
                             <input
-                                {...register(vital.field as any)}
+                                {...register(vital.field as 'bp' | 'temp' | 'weight')}
                                 className="w-full text-2xl font-black text-slate-900 border-none outline-none placeholder:text-slate-200"
                                 placeholder={vital.placeholder}
                             />

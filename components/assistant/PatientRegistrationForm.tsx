@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { patientService } from '@/lib/services/patientService';
+import { Patient } from '@/lib/types';
 import { useAuthStore } from '@/lib/store/authStore';
 import toast from 'react-hot-toast';
 import { UserPlus, Phone, User, Calendar, MapPin, ChevronRight, Loader2, Users } from 'lucide-react';
@@ -18,7 +19,7 @@ const patientSchema = z.object({
 });
 
 interface PatientRegistrationFormProps {
-    onSuccess?: (patient: any) => void;
+    onSuccess?: (patient: Patient) => void;
 }
 
 export default function PatientRegistrationForm({ onSuccess }: PatientRegistrationFormProps) {
@@ -33,7 +34,7 @@ export default function PatientRegistrationForm({ onSuccess }: PatientRegistrati
         }
     });
 
-    const onSubmit = async (data: any) => {
+    const onSubmit = async (data: z.infer<typeof patientSchema>) => {
         try {
             setLoading(true);
 
@@ -55,12 +56,12 @@ export default function PatientRegistrationForm({ onSuccess }: PatientRegistrati
             };
 
             const res = await patientService.createPatient(payload);
-            toast.success("Patient registered successfully!");
+            toast.success(`Patient registered! ID: ${res.data?.patientId || 'N/A'}`, { duration: 5000 });
             reset();
             if (onSuccess) onSuccess(res.data);
-        } catch (error: any) {
-            console.error("Registration error:", error);
-            toast.error(error.response?.data?.message || "Failed to register patient");
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: { message?: string } } };
+            toast.error(err.response?.data?.message || "Failed to register patient");
         } finally {
             setLoading(false);
         }

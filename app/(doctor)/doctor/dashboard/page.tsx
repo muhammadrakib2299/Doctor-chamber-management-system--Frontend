@@ -32,7 +32,6 @@ export default function DoctorDashboard() {
             const res = await appointmentService.getTodayQueue(doctorId);
             setQueue(res.data);
         } catch (error) {
-            console.error(error);
         } finally {
             setLoading(false);
         }

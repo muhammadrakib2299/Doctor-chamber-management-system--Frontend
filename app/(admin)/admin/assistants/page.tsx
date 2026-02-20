@@ -74,7 +74,6 @@ export default function AssistantsList() {
             const res = await api.get('/admin/doctors');
             setDoctors(res.data.data);
         } catch (error) {
-            console.error('Failed to load doctors');
         }
     };
 
@@ -125,10 +124,8 @@ export default function AssistantsList() {
         setSubmitting(true);
         try {
             if (editingAssistant) {
-                const payload = { ...formData };
-                if (!payload.password) delete (payload as any).password;
-
-                await api.put(`/admin/assistants/${editingAssistant._id}`, payload);
+                const { password, ...updatePayload } = formData;
+                await api.put(`/admin/assistants/${editingAssistant._id}`, password ? formData : updatePayload);
                 toast.success('Assistant updated successfully');
             } else {
                 await api.post('/admin/assistants', formData);
@@ -136,8 +133,9 @@ export default function AssistantsList() {
             }
             setIsModalOpen(false);
             fetchAssistants();
-        } catch (error: any) {
-            toast.error(error.response?.data?.message || 'Operation failed');
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: { message?: string } } };
+            toast.error(err.response?.data?.message || 'Operation failed');
         } finally {
             setSubmitting(false);
         }
@@ -253,6 +251,7 @@ export default function AssistantsList() {
                                                     onClick={() => setAssistantToDelete(assistant)}
                                                     className="p-2.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
                                                     title="Delete Assistant"
+                                                    aria-label={`Delete ${assistant.name}`}
                                                 >
                                                     <Trash2 className="h-5 w-5" />
                                                 </button>
@@ -260,6 +259,7 @@ export default function AssistantsList() {
                                                     onClick={() => handleEdit(assistant)}
                                                     className="p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
                                                     title="Edit Assistant"
+                                                    aria-label={`Edit ${assistant.name}`}
                                                 >
                                                     <Edit className="h-5 w-5" />
                                                 </button>
@@ -286,7 +286,7 @@ export default function AssistantsList() {
 
             {/* Add/Edit Assistant Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="assistant-modal-title">
                     <div
                         className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] animate-in fade-in duration-300"
                         onClick={() => setIsModalOpen(false)}
@@ -299,13 +299,14 @@ export default function AssistantsList() {
                                     <UserPlus className="h-6 w-6" />
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-bold">{editingAssistant ? 'Update Assistant' : 'New Assistant'}</h3>
+                                    <h3 id="assistant-modal-title" className="text-xl font-bold">{editingAssistant ? 'Update Assistant' : 'New Assistant'}</h3>
                                     <p className="text-blue-100 text-xs">{editingAssistant ? 'Update assistant credentials and details' : 'Fill in the details to create a new portal'}</p>
                                 </div>
                             </div>
                             <button
                                 onClick={() => setIsModalOpen(false)}
                                 className="p-2 hover:bg-white/10 rounded-full transition-colors"
+                                aria-label="Close modal"
                             >
                                 <X className="h-6 w-6" />
                             </button>
@@ -417,7 +418,7 @@ export default function AssistantsList() {
 
             {/* Custom Delete Confirmation Modal */}
             {assistantToDelete && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="delete-assistant-title">
                     <div
                         className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] animate-in fade-in duration-300"
                         onClick={() => setAssistantToDelete(null)}
@@ -427,7 +428,7 @@ export default function AssistantsList() {
                             <div className="mx-auto w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mb-6 shadow-sm">
                                 <AlertTriangle className="h-8 w-8 text-red-600" />
                             </div>
-                            <h3 className="text-2xl font-bold text-slate-900 mb-2">Delete Account?</h3>
+                            <h3 id="delete-assistant-title" className="text-2xl font-bold text-slate-900 mb-2">Delete Account?</h3>
                             <p className="text-slate-500 mb-8 leading-relaxed">
                                 You are about to delete <span className="font-bold text-slate-900">"{assistantToDelete.name}"</span>.
                                 This action will permanently remove their access to the portal.

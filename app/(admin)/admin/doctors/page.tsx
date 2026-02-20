@@ -46,7 +46,7 @@ export default function DoctorsList() {
     const fetchDoctors = async () => {
         try {
             setLoading(true);
-            const params: any = {};
+            const params: Record<string, string> = {};
             if (search) params.search = search;
             if (filterStatus) params.status = filterStatus;
 
@@ -88,8 +88,9 @@ export default function DoctorsList() {
             toast.success('Doctor updated successfully');
             setIsEditModalOpen(false);
             fetchDoctors();
-        } catch (error: any) {
-            toast.error(error.response?.data?.message || 'Failed to update doctor');
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: { message?: string } } };
+            toast.error(err.response?.data?.message || 'Failed to update doctor');
         } finally {
             setSubmitting(false);
         }
@@ -248,6 +249,7 @@ export default function DoctorsList() {
                                                     onClick={() => setDoctorToDelete(doctor)}
                                                     className="p-2.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
                                                     title="Delete Doctor"
+                                                    aria-label={`Delete Dr. ${doctor.name}`}
                                                 >
                                                     <Trash2 className="h-5 w-5" />
                                                 </button>
@@ -255,6 +257,7 @@ export default function DoctorsList() {
                                                     onClick={() => handleEdit(doctor)}
                                                     className="p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
                                                     title="Edit Doctor"
+                                                    aria-label={`Edit Dr. ${doctor.name}`}
                                                 >
                                                     <Edit className="h-5 w-5" />
                                                 </button>
@@ -270,7 +273,7 @@ export default function DoctorsList() {
 
             {/* Edit Doctor Modal */}
             {isEditModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="edit-doctor-title">
                     <div
                         className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] animate-in fade-in duration-300"
                         onClick={() => setIsEditModalOpen(false)}
@@ -290,6 +293,7 @@ export default function DoctorsList() {
                             <button
                                 onClick={() => setIsEditModalOpen(false)}
                                 className="p-2 hover:bg-white/10 rounded-full transition-colors"
+                                aria-label="Close edit modal"
                             >
                                 <X className="h-6 w-6" />
                             </button>
@@ -397,7 +401,7 @@ export default function DoctorsList() {
 
             {/* Delete Confirmation Modal */}
             {doctorToDelete && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="delete-doctor-title">
                     <div
                         className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] animate-in fade-in duration-300"
                         onClick={() => setDoctorToDelete(null)}
@@ -407,7 +411,7 @@ export default function DoctorsList() {
                             <div className="mx-auto w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mb-6 shadow-sm">
                                 <AlertTriangle className="h-8 w-8 text-red-600" />
                             </div>
-                            <h3 className="text-2xl font-bold text-slate-900 mb-2">Remove Doctor?</h3>
+                            <h3 id="delete-doctor-title" className="text-2xl font-bold text-slate-900 mb-2">Remove Doctor?</h3>
                             <p className="text-slate-500 mb-8 leading-relaxed">
                                 You are about to permanentely delete <span className="font-bold text-slate-900">Dr. {doctorToDelete.name}</span>.
                                 <br /><span className="text-xs text-red-500 font-bold mt-2 inline-block">Warning: This will also delete all their linked assistants.</span>
@@ -434,30 +438,5 @@ export default function DoctorsList() {
                 </div>
             )}
         </div>
-    );
-}
-
-function Loader2({ className }: { className?: string }) {
-    return (
-        <svg
-            className={`animate-spin ${className}`}
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-        >
-            <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-            ></circle>
-            <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
-        </svg>
     );
 }

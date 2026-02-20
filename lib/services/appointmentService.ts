@@ -2,24 +2,43 @@ import api from '../api';
 
 export interface Appointment {
     _id: string;
-    patientId: string | any;
+    patientId: string | {
+        _id: string;
+        name: string;
+        phone: string;
+        patientId: string;
+        age: number;
+        gender: string;
+    };
     doctorId: string;
     appointmentDate: string;
     serialNumber: number;
-    status: 'booked' | 'waiting' | 'in_progress' | 'completed' | 'cancelled';
+    status: 'booked' | 'waiting' | 'in_progress' | 'completed' | 'cancelled' | 'no_show';
     feeAmount: number;
-    paymentStatus: 'pending' | 'paid';
+    feeType: 'new_patient' | 'old_patient';
+    paymentStatus: 'pending' | 'paid' | 'refunded';
+    bookingType: 'phone' | 'walk-in' | 'online';
+    createdAt: string;
 }
 
 export interface CreateAppointmentData {
     patientId: string;
     doctorId: string;
-    appointmentDate: string; // ISO date string
+    appointmentDate: string;
     bookingType: 'phone' | 'walk-in';
     feeAmount: number;
     feeType: 'new_patient' | 'old_patient';
-    paymentMethod: 'cash'; // as per requirement
+    paymentMethod: 'cash';
     paymentStatus: 'pending' | 'paid';
+}
+
+export interface AppointmentListParams {
+    page?: number;
+    limit?: number;
+    status?: string;
+    sort?: string;
+    dateFrom?: string;
+    dateTo?: string;
 }
 
 export const appointmentService = {
@@ -35,6 +54,12 @@ export const appointmentService = {
         return response.data;
     },
 
+    // Get appointments with pagination and filters
+    getAppointments: async (params?: AppointmentListParams) => {
+        const response = await api.get('/appointments', { params });
+        return response.data;
+    },
+
     // Get Today's queue
     getTodayQueue: async (doctorId: string) => {
         const response = await api.get('/appointments/today', {
@@ -43,8 +68,14 @@ export const appointmentService = {
         return response.data;
     },
 
+    // Get single appointment
+    getAppointment: async (id: string) => {
+        const response = await api.get(`/appointments/${id}`);
+        return response.data;
+    },
+
     // Update appointment status
-    updateAppointment: async (id: string, data: any) => {
+    updateAppointment: async (id: string, data: Record<string, unknown>) => {
         const response = await api.put(`/appointments/${id}`, data);
         return response.data;
     }

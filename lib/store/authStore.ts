@@ -7,9 +7,21 @@ interface User {
     email: string;
     role: 'admin' | 'doctor' | 'assistant';
     phone?: string;
-    doctorInfo?: any;
+    doctorInfo?: {
+        specialization?: string;
+        qualification?: string;
+        registrationNumber?: string;
+        chamberName?: string;
+        chamberAddress?: string;
+    };
     doctorId?: string;
-    subscription?: any;
+    subscription?: {
+        plan: 'trial' | 'monthly' | 'quarterly' | 'yearly';
+        startDate?: string;
+        endDate?: string;
+        isActive: boolean;
+        maxAssistants?: number;
+    };
     id?: string;
 }
 

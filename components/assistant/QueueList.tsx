@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { appointmentService, Appointment } from '@/lib/services/appointmentService';
+import { appointmentService } from '@/lib/services/appointmentService';
 import toast from 'react-hot-toast';
 import {
     Clock,
@@ -11,30 +11,35 @@ import {
     Phone,
     MoreVertical,
     Activity,
-    MapPin,
-    Calendar,
-    ChevronRight,
     Loader2,
     Ticket,
     Fingerprint
 } from 'lucide-react';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
+import { QueueItem } from '@/lib/types';
 
 interface QueueListProps {
-    queue: any[];
-    setQueue: React.Dispatch<React.SetStateAction<any[]>>;
+    queue: QueueItem[];
+    setQueue: React.Dispatch<React.SetStateAction<QueueItem[]>>;
 }
 
 export default function QueueList({ queue, setQueue }: QueueListProps) {
     const [processingId, setProcessingId] = useState<string | null>(null);
+    const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+    const [confirmAction, setConfirmAction] = useState<{
+        open: boolean;
+        id: string;
+        status: string;
+        label: string;
+    }>({ open: false, id: '', status: '', label: '' });
 
     const handleConfirmArrival = async (id: string) => {
         try {
             setProcessingId(id);
             await appointmentService.confirmArrival(id);
             toast.success("Patient check-in confirmed!");
-            // Queue will be updated via socket, but we can also update locally for snappiness
             setQueue(prev => prev.map(q => q._id === id ? { ...q, status: 'waiting' } : q));
-        } catch (error) {
+        } catch {
             toast.error("Failed to confirm arrival");
         } finally {
             setProcessingId(null);
@@ -47,11 +52,23 @@ export default function QueueList({ queue, setQueue }: QueueListProps) {
             await appointmentService.updateAppointment(id, { status: newStatus });
             toast.success(`Patient marked as ${newStatus}`);
             setQueue(prev => prev.map(q => q._id === id ? { ...q, status: newStatus } : q));
-        } catch (error) {
+        } catch {
             toast.error("Status update failed");
         } finally {
             setProcessingId(null);
+            setConfirmAction({ open: false, id: '', status: '', label: '' });
+            setOpenMenuId(null);
         }
+    };
+
+    const requestCancel = (id: string) => {
+        setOpenMenuId(null);
+        setConfirmAction({
+            open: true,
+            id,
+            status: 'cancelled',
+            label: 'Cancel Appointment'
+        });
     };
 
     const getStatusStyles = (status: string) => {
@@ -65,7 +82,7 @@ export default function QueueList({ queue, setQueue }: QueueListProps) {
             case 'completed':
                 return 'bg-slate-100 text-slate-600 ring-slate-600/10';
             default:
-                return 'bg-gray-100 text-gray-600';
+                return 'bg-slate-100 text-slate-600';
         }
     };
 
@@ -77,8 +94,8 @@ export default function QueueList({ queue, setQueue }: QueueListProps) {
                         <Activity className="h-5 w-5 text-blue-600" />
                     </div>
                     <div>
-                        <h3 className="text-xl font-bold text-slate-800">Todays Active Queue</h3>
-                        <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-0.5">{queue.length} Active Slots</p>
+                        <h3 className="text-xl font-bold text-slate-800">Today&apos;s Active Queue</h3>
+                        <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-0.5" aria-live="polite">{queue.length} Active Slots</p>
                     </div>
                 </div>
             </div>
@@ -86,7 +103,7 @@ export default function QueueList({ queue, setQueue }: QueueListProps) {
             <div className="divide-y divide-slate-50">
                 {queue.length === 0 ? (
                     <div className="py-28 text-center bg-slate-50/30">
-                        <div className="inline-flex items-center justify-center p-6 bg-white rounded-3xl shadow-sm border border-slate-100 mb-4 transform hover:scale-110 transition-transform">
+                        <div className="inline-flex items-center justify-center p-6 bg-white rounded-3xl shadow-sm border border-slate-100 mb-4">
                             <Ticket className="h-10 w-10 text-slate-200" />
                         </div>
                         <h4 className="text-lg font-bold text-slate-400">Queue is currently empty</h4>
@@ -138,6 +155,7 @@ export default function QueueList({ queue, setQueue }: QueueListProps) {
                                             onClick={() => handleConfirmArrival(item._id)}
                                             disabled={processingId === item._id}
                                             className="px-6 py-3 bg-emerald-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-emerald-100 hover:bg-emerald-700 hover:shadow-emerald-200 transition-all flex items-center gap-2"
+                                            aria-label={`Confirm arrival for ${item.patientId?.name}`}
                                         >
                                             {processingId === item._id ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
                                             Confirm Arrival
@@ -158,18 +176,30 @@ export default function QueueList({ queue, setQueue }: QueueListProps) {
                                         </span>
                                     )}
 
-                                    <div className="relative group/menu">
-                                        <button className="p-3 text-slate-300 hover:text-slate-600 hover:bg-slate-50 border border-transparent hover:border-slate-100 rounded-2xl transition-all">
+                                    {/* Click-toggle menu (touch-friendly) */}
+                                    <div className="relative">
+                                        <button
+                                            onClick={() => setOpenMenuId(openMenuId === item._id ? null : item._id)}
+                                            className="p-3 text-slate-300 hover:text-slate-600 hover:bg-slate-50 border border-transparent hover:border-slate-100 rounded-2xl transition-all"
+                                            aria-label={`More actions for ${item.patientId?.name}`}
+                                            aria-expanded={openMenuId === item._id}
+                                        >
                                             <MoreVertical className="h-5 w-5" />
                                         </button>
-                                        <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-2xl shadow-2xl border border-slate-100 opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all z-20 overflow-hidden">
-                                            <button
-                                                onClick={() => handleStatusUpdate(item._id, 'cancelled')}
-                                                className="w-full px-5 py-3.5 text-left text-xs font-bold text-rose-600 hover:bg-rose-50 flex items-center gap-3 transition-colors"
-                                            >
-                                                <XCircle className="h-4 w-4" /> Cancel Appointment
-                                            </button>
-                                        </div>
+                                        {openMenuId === item._id && (
+                                            <>
+                                                <div className="fixed inset-0 z-10" onClick={() => setOpenMenuId(null)} />
+                                                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-2xl shadow-2xl border border-slate-100 z-20 overflow-hidden">
+                                                    <button
+                                                        onClick={() => requestCancel(item._id)}
+                                                        className="w-full px-5 py-3.5 text-left text-xs font-bold text-rose-600 hover:bg-rose-50 flex items-center gap-3 transition-colors"
+                                                        aria-label={`Cancel appointment for ${item.patientId?.name}`}
+                                                    >
+                                                        <XCircle className="h-4 w-4" /> Cancel Appointment
+                                                    </button>
+                                                </div>
+                                            </>
+                                        )}
                                     </div>
 
                                     <div className="hidden sm:flex flex-col items-end pl-4 pb-1">
@@ -191,6 +221,17 @@ export default function QueueList({ queue, setQueue }: QueueListProps) {
                     <div className="h-2 w-2 rounded-full bg-blue-400"></div>
                 </div>
             </div>
+
+            {/* Cancel Confirmation Dialog */}
+            <ConfirmDialog
+                open={confirmAction.open}
+                title={confirmAction.label}
+                message="Are you sure you want to cancel this appointment? This action cannot be undone."
+                confirmLabel="Cancel Appointment"
+                variant="danger"
+                onConfirm={() => handleStatusUpdate(confirmAction.id, confirmAction.status)}
+                onCancel={() => setConfirmAction({ open: false, id: '', status: '', label: '' })}
+            />
         </div>
     );
 }

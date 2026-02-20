@@ -5,15 +5,16 @@ import { patientService } from '@/lib/services/patientService';
 import { useAuthStore } from '@/lib/store/authStore';
 import toast from 'react-hot-toast';
 import { Search, User, Phone, Fingerprint, ChevronRight, Loader2, Sparkles } from 'lucide-react';
+import type { Patient } from '@/lib/types';
 
 interface SearchPatientProps {
-    onSelect: (patient: any) => void;
+    onSelect: (patient: Patient) => void;
 }
 
 export default function SearchPatient({ onSelect }: SearchPatientProps) {
     const { user } = useAuthStore();
     const [query, setQuery] = useState('');
-    const [results, setResults] = useState<any[]>([]);
+    const [results, setResults] = useState<Patient[]>([]);
     const [loading, setLoading] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
 
@@ -32,8 +33,7 @@ export default function SearchPatient({ onSelect }: SearchPatientProps) {
 
             const res = await patientService.searchPatients(query, doctorId);
             setResults(res.data);
-        } catch (error) {
-            console.error(error);
+        } catch {
             toast.error("Search failed");
             setResults([]);
         } finally {
@@ -73,7 +73,7 @@ export default function SearchPatient({ onSelect }: SearchPatientProps) {
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 gap-3 max-h-[340px] overflow-y-auto pr-2 custom-scrollbar">
-                                {results.map((patient: any) => (
+                                {results.map((patient) => (
                                     <div
                                         key={patient._id}
                                         className="group/item flex items-center justify-between p-5 bg-white border border-slate-100 rounded-3xl hover:border-blue-400 hover:bg-blue-50/30 cursor-pointer transition-all active:scale-[0.99]"

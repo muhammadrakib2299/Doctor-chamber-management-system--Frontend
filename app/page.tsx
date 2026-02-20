@@ -1,3 +1,6 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
 import {
   Stethoscope,
@@ -6,11 +9,15 @@ import {
   Users,
   ChevronRight,
   Activity,
-  CalendarCheck
+  CalendarCheck,
+  Menu,
+  X
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function Home() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-slate-50 font-sans">
       {/* Navigation */}
@@ -25,15 +32,42 @@ export default function Home() {
           <div className="hidden items-center gap-8 md:flex">
             <a href="#features" className="text-sm font-medium text-slate-600 hover:text-blue-600">Features</a>
             <a href="#how-it-works" className="text-sm font-medium text-slate-600 hover:text-blue-600">How it Works</a>
-            <a href="#pricing" className="text-sm font-medium text-slate-600 hover:text-blue-600">Pricing</a>
+            <a href="#portals" className="text-sm font-medium text-slate-600 hover:text-blue-600">Portals</a>
           </div>
-          <Link
-            href="/auth/login"
-            className="rounded-full bg-slate-900 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-800"
-          >
-            Login Portal
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/auth/login"
+              className="hidden sm:inline-flex rounded-full bg-slate-900 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-800"
+            >
+              Login Portal
+            </Link>
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100"
+              aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={mobileMenuOpen}
+            >
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile menu dropdown */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-slate-200 bg-white px-4 py-4 space-y-3">
+            <a href="#features" onClick={() => setMobileMenuOpen(false)} className="block text-sm font-medium text-slate-600 hover:text-blue-600 py-2">Features</a>
+            <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="block text-sm font-medium text-slate-600 hover:text-blue-600 py-2">How it Works</a>
+            <a href="#portals" onClick={() => setMobileMenuOpen(false)} className="block text-sm font-medium text-slate-600 hover:text-blue-600 py-2">Portals</a>
+            <Link
+              href="/auth/login"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block w-full text-center rounded-full bg-slate-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-slate-800"
+            >
+              Login Portal
+            </Link>
+          </div>
+        )}
       </nav>
 
       {/* Hero Section */}
@@ -58,18 +92,18 @@ export default function Home() {
             >
               Get Started Now <ChevronRight className="ml-2 h-4 w-4" />
             </Link>
-            <Link
-              href="#demo"
+            <a
+              href="#features"
               className="flex items-center justify-center rounded-full bg-white border border-slate-200 px-8 py-3 text-base font-semibold text-slate-700 transition-all hover:bg-slate-50 hover:border-slate-300"
             >
-              View Live Demo
-            </Link>
+              Explore Features
+            </a>
           </div>
         </div>
       </section>
 
-      {/* Role Navigation Cards (For Quick Access) */}
-      <section className="py-12 bg-white border-y border-slate-100">
+      {/* Role Navigation Cards */}
+      <section id="portals" className="py-12 bg-white border-y border-slate-100">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-center text-sm font-semibold text-slate-500 uppercase tracking-wider mb-8">Access Your Portal</h2>
           <div className="grid gap-6 md:grid-cols-3">
@@ -136,6 +170,29 @@ export default function Home() {
         </div>
       </section>
 
+      {/* How it Works */}
+      <section id="how-it-works" className="py-24 bg-white">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">How it Works</h2>
+            <p className="mt-4 text-lg text-slate-600">Three simple steps to digitize your practice.</p>
+          </div>
+          <div className="grid gap-8 md:grid-cols-3">
+            {[
+              { step: '01', title: 'Register', desc: 'Admin creates your doctor account and activates your subscription.' },
+              { step: '02', title: 'Setup', desc: 'Add your assistant, configure fees, and start registering patients.' },
+              { step: '03', title: 'Practice', desc: 'Manage queues, write prescriptions, and track everything in real-time.' },
+            ].map((item, i) => (
+              <div key={i} className="text-center p-8">
+                <span className="text-5xl font-black text-blue-100">{item.step}</span>
+                <h3 className="text-xl font-bold text-slate-900 mt-4 mb-2">{item.title}</h3>
+                <p className="text-slate-600">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="bg-slate-900 py-12 text-slate-400">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
@@ -143,7 +200,7 @@ export default function Home() {
             <Activity className="h-6 w-6 text-blue-500" />
             <span className="text-xl font-bold text-white">MedCore</span>
           </div>
-          <p className="text-sm">© {new Date().getFullYear()} MedCore Systems. All rights reserved.</p>
+          <p className="text-sm">&copy; {new Date().getFullYear()} MedCore Systems. All rights reserved.</p>
         </div>
       </footer>
     </div>

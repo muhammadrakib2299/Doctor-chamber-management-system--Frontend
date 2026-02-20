@@ -23,12 +23,13 @@ import {
     TrendingUp,
     ShieldCheck
 } from 'lucide-react';
+import { QueueItem, Patient } from '@/lib/types';
 
 export default function AssistantDashboard() {
     const { user } = useAuthStore();
-    const [queue, setQueue] = useState<any[]>([]);
+    const [queue, setQueue] = useState<QueueItem[]>([]);
     const [viewMode, setViewMode] = useState<'queue' | 'registry'>('queue');
-    const [selectedPatient, setSelectedPatient] = useState<any>(null);
+    const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
     const [showBookingModal, setShowBookingModal] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -44,7 +45,6 @@ export default function AssistantDashboard() {
             const res = await appointmentService.getTodayQueue(doctorId);
             setQueue(res.data);
         } catch (error) {
-            console.error("Failed to fetch queue", error);
             toast.error("Could not load today's queue");
         } finally {
             setIsRefreshing(false);
@@ -85,12 +85,12 @@ export default function AssistantDashboard() {
         };
     }, [doctorId]);
 
-    const handlePatientSelect = (patient: any) => {
+    const handlePatientSelect = (patient: Patient) => {
         setSelectedPatient(patient);
         setShowBookingModal(true);
     };
 
-    const handleRegistrationSuccess = (patient: any) => {
+    const handleRegistrationSuccess = (patient: Patient) => {
         handlePatientSelect(patient);
     };
 

@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { patientService } from '@/lib/services/patientService';
+import { Patient } from '@/lib/types';
 import toast from 'react-hot-toast';
 import { X, Phone, User, Calendar, MapPin, Save, Loader2, Users } from 'lucide-react';
 
@@ -17,7 +18,7 @@ const patientSchema = z.object({
 });
 
 interface PatientEditModalProps {
-    patient: any;
+    patient: Patient;
     onClose: () => void;
     onSuccess: () => void;
 }
@@ -36,23 +37,23 @@ export default function PatientEditModal({ patient, onClose, onSuccess }: Patien
         }
     });
 
-    const onSubmit = async (data: any) => {
+    const onSubmit = async (data: z.infer<typeof patientSchema>) => {
         try {
             setLoading(true);
             await patientService.updatePatient(patient._id, data);
             toast.success("Patient updated successfully!");
             onSuccess();
             onClose();
-        } catch (error: any) {
-            console.error("Update error:", error);
-            toast.error(error.response?.data?.message || "Failed to update patient");
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: { message?: string } } };
+            toast.error(err.response?.data?.message || "Failed to update patient");
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="fixed inset-0 z-[100] bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="edit-patient-title">
             <div className="bg-white w-full max-w-xl rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-300">
                 <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-8 flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -60,11 +61,11 @@ export default function PatientEditModal({ patient, onClose, onSuccess }: Patien
                             <User className="h-6 w-6 text-white" />
                         </div>
                         <div>
-                            <h2 className="text-2xl font-black text-white">Edit Patient</h2>
+                            <h2 id="edit-patient-title" className="text-2xl font-black text-white">Edit Patient</h2>
                             <p className="text-blue-100 text-xs font-bold uppercase tracking-widest mt-0.5">#{patient.patientId}</p>
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-2.5 hover:bg-white/10 rounded-xl transition-colors">
+                    <button onClick={onClose} className="p-2.5 hover:bg-white/10 rounded-xl transition-colors" aria-label="Close edit modal">
                         <X className="h-6 w-6 text-white/70" />
                     </button>
                 </div>

@@ -13,7 +13,7 @@ import {
 import Link from 'next/link';
 
 export default function AdminDashboard() {
-    const [stats, setStats] = useState<any>({
+    const [stats, setStats] = useState<{ totalDoctors: number; activeSubscriptions: number; totalPatients: number }>({
         totalDoctors: 0,
         activeSubscriptions: 0,
         totalPatients: 0
@@ -24,8 +24,8 @@ export default function AdminDashboard() {
             try {
                 const res = await adminService.getStats();
                 setStats(res.data);
-            } catch (error) {
-                console.error("Failed to load stats");
+            } catch {
+                // Stats will remain at default values
             }
         };
         fetchStats();

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { patientService } from '@/lib/services/patientService';
+import { Patient } from '@/lib/types';
 import { useAuthStore } from '@/lib/store/authStore';
 import toast from 'react-hot-toast';
 import {
@@ -32,14 +33,14 @@ interface PatientListProps {
 
 export default function PatientList({ refreshTrigger = 0 }: PatientListProps) {
     const { user } = useAuthStore();
-    const [patients, setPatients] = useState<any[]>([]);
+    const [patients, setPatients] = useState<Patient[]>([]);
     const [loading, setLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const [selectedPatient, setSelectedPatient] = useState<any>(null);
+    const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
     const [showEditModal, setShowEditModal] = useState(false);
-    const [bookingPatient, setBookingPatient] = useState<any>(null);
+    const [bookingPatient, setBookingPatient] = useState<Patient | null>(null);
     const [debouncedSearch, setDebouncedSearch] = useState('');
 
     const doctorId = user?.role === 'doctor' ? (user.id || user._id) : user?.doctorId;
@@ -58,7 +59,7 @@ export default function PatientList({ refreshTrigger = 0 }: PatientListProps) {
 
         try {
             setLoading(true);
-            const params: any = {
+            const params: Record<string, string | number> = {
                 page,
                 limit: 10,
                 doctorId,
@@ -76,7 +77,6 @@ export default function PatientList({ refreshTrigger = 0 }: PatientListProps) {
                 setTotalPages(Math.ceil(count / 10));
             }
         } catch (error) {
-            console.error(error);
             toast.error("Failed to fetch patients");
         } finally {
             setLoading(false);
@@ -104,18 +104,17 @@ export default function PatientList({ refreshTrigger = 0 }: PatientListProps) {
                 toast.success('Patient deleted successfully');
                 fetchPatients();
             } catch (error) {
-                console.error(error);
                 toast.error('Failed to delete patient');
             }
         }
     };
 
-    const handleEdit = (patient: any) => {
+    const handleEdit = (patient: Patient) => {
         setSelectedPatient(patient);
         setShowEditModal(true);
     };
 
-    const handleTakeSerial = (patient: any) => {
+    const handleTakeSerial = (patient: Patient) => {
         setBookingPatient(patient);
     };
 
@@ -197,6 +196,7 @@ export default function PatientList({ refreshTrigger = 0 }: PatientListProps) {
                                         onClick={() => handleEdit(patient)}
                                         className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
                                         title="Edit Patient"
+                                        aria-label={`Edit ${patient.name}`}
                                     >
                                         <Edit2 className="h-4 w-4" />
                                     </button>
@@ -204,6 +204,7 @@ export default function PatientList({ refreshTrigger = 0 }: PatientListProps) {
                                         onClick={() => handleDelete(patient._id)}
                                         className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all"
                                         title="Delete Patient"
+                                        aria-label={`Delete ${patient.name}`}
                                     >
                                         <Trash2 className="h-4 w-4" />
                                     </button>

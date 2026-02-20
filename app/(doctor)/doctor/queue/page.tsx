@@ -7,7 +7,6 @@ import { io } from 'socket.io-client';
 import toast from 'react-hot-toast';
 import {
     Clock,
-    MoreVertical,
     User,
     ArrowRight,
     Pause,
@@ -16,15 +15,26 @@ import {
     UserMinus,
     Loader2,
     RefreshCw,
-    Activity
+    Activity,
+    WifiOff
 } from 'lucide-react';
 import Link from 'next/link';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 
 export default function DoctorQueuePage() {
     const { user } = useAuthStore();
     const [queue, setQueue] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
+    const [socketError, setSocketError] = useState(false);
+
+    // Confirmation dialog state
+    const [confirmAction, setConfirmAction] = useState<{
+        open: boolean;
+        id: string;
+        status: string;
+        label: string;
+    }>({ open: false, id: '', status: '', label: '' });
 
     const doctorId = user?.role === 'doctor' ? (user.id || user._id) : user?.doctorId;
 
@@ -34,8 +44,7 @@ export default function DoctorQueuePage() {
             setRefreshing(true);
             const res = await appointmentService.getTodayQueue(doctorId);
             setQueue(res.data);
-        } catch (error) {
-            console.error("Failed to fetch queue", error);
+        } catch {
             toast.error("Could not load today's queue");
         } finally {
             setLoading(false);
@@ -52,10 +61,21 @@ export default function DoctorQueuePage() {
         if (!doctorId) return;
 
         const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:5000';
-        const socket = io(socketUrl);
+        const token = typeof window !== 'undefined'
+            ? (localStorage.getItem('token') || sessionStorage.getItem('token'))
+            : null;
+
+        const socket = io(socketUrl, {
+            auth: { token },
+        });
 
         socket.on('connect', () => {
+            setSocketError(false);
             socket.emit('join-doctor-room', doctorId);
+        });
+
+        socket.on('connect_error', () => {
+            setSocketError(true);
         });
 
         socket.on('queue-update', () => {
@@ -63,6 +83,7 @@ export default function DoctorQueuePage() {
         });
 
         return () => {
+            socket.removeAllListeners();
             socket.disconnect();
         };
     }, [doctorId]);
@@ -70,11 +91,16 @@ export default function DoctorQueuePage() {
     const handleStatusUpdate = async (id: string, status: string) => {
         try {
             await appointmentService.updateAppointment(id, { status });
-            toast.success(`Patient status updated to ${status}`);
+            toast.success(`Patient status updated to ${status.replace('_', ' ')}`);
             fetchQueue();
-        } catch (error) {
+        } catch {
             toast.error("Status update failed");
         }
+        setConfirmAction({ open: false, id: '', status: '', label: '' });
+    };
+
+    const requestStatusChange = (id: string, status: string, label: string) => {
+        setConfirmAction({ open: true, id, status, label });
     };
 
     const inProgressPatient = queue.find(q => q.status === 'in_progress');
@@ -90,6 +116,23 @@ export default function DoctorQueuePage() {
 
     return (
         <div className="space-y-10 pb-20">
+            {/* Socket connection error banner */}
+            {socketError && (
+                <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-2xl text-amber-800">
+                    <WifiOff className="h-5 w-5 flex-shrink-0" />
+                    <div className="flex-1">
+                        <p className="text-sm font-bold">Real-time connection lost</p>
+                        <p className="text-xs text-amber-600">Queue updates may be delayed. Data will sync on refresh.</p>
+                    </div>
+                    <button
+                        onClick={fetchQueue}
+                        className="px-4 py-2 bg-amber-100 hover:bg-amber-200 rounded-xl text-xs font-bold uppercase tracking-widest transition-colors"
+                    >
+                        Refresh
+                    </button>
+                </div>
+            )}
+
             {/* Page Header Area */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
@@ -100,11 +143,12 @@ export default function DoctorQueuePage() {
                     <button
                         onClick={fetchQueue}
                         className={`flex items-center gap-2 px-5 py-3 rounded-2xl bg-white border border-slate-200 text-slate-600 font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm ${refreshing ? 'opacity-50' : ''}`}
+                        aria-label="Refresh queue"
                     >
                         <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
                         Sync System
                     </button>
-                    <div className="px-5 py-3 rounded-2xl bg-emerald-500 text-white font-black text-[10px] uppercase tracking-widest shadow-xl shadow-emerald-500/20 flex items-center gap-2">
+                    <div className="px-5 py-3 rounded-2xl bg-emerald-500 text-white font-black text-[10px] uppercase tracking-widest shadow-xl shadow-emerald-500/20 flex items-center gap-2" aria-live="polite">
                         <Activity className="h-4 w-4" />
                         Live Monitoring
                     </div>
@@ -151,11 +195,6 @@ export default function DoctorQueuePage() {
                                             </div>
                                         </div>
 
-                                        <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
-                                            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Recorded Sensation</h4>
-                                            <p className="text-slate-700 font-extrabold text-lg">"{inProgressPatient.patientId?.problem || 'General Check-up'}"</p>
-                                        </div>
-
                                         <div className="flex items-center gap-4 pt-4">
                                             <Link
                                                 href="/doctor/prescriptions/create"
@@ -165,8 +204,9 @@ export default function DoctorQueuePage() {
                                                 Complete & Prescribe
                                             </Link>
                                             <button
-                                                onClick={() => handleStatusUpdate(inProgressPatient._id, 'waiting')}
+                                                onClick={() => requestStatusChange(inProgressPatient._id, 'waiting', 'Pause consultation')}
                                                 className="p-5 bg-white border-2 border-slate-100 text-slate-400 hover:text-amber-500 hover:border-amber-100 rounded-2xl transition-all active:scale-95"
+                                                aria-label="Pause consultation"
                                             >
                                                 <Pause className="h-6 w-6" />
                                             </button>
@@ -193,7 +233,7 @@ export default function DoctorQueuePage() {
                             <Clock className="h-5 w-5 text-amber-500" />
                             <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">Waiting Pipeline</h3>
                         </div>
-                        <span className="px-3 py-1 bg-amber-50 text-amber-600 font-black text-[10px] uppercase rounded-lg border border-amber-100">
+                        <span className="px-3 py-1 bg-amber-50 text-amber-600 font-black text-[10px] uppercase rounded-lg border border-amber-100" aria-live="polite">
                             {waitingQueue.length} Queue
                         </span>
                     </div>
@@ -216,16 +256,12 @@ export default function DoctorQueuePage() {
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center justify-between gap-3">
-                                        <div className="flex items-center gap-1.5 text-slate-400">
-                                            <Clock className="h-3 w-3" />
-                                            <span className="text-[10px] font-bold uppercase tracking-tighter">Est: 15min</span>
-                                        </div>
-
+                                    <div className="flex items-center justify-end gap-3">
                                         <button
-                                            onClick={() => handleStatusUpdate(patient._id, 'in_progress')}
+                                            onClick={() => requestStatusChange(patient._id, 'in_progress', 'Start consultation')}
                                             disabled={!!inProgressPatient}
                                             className="px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white disabled:opacity-30 disabled:hover:bg-blue-50 disabled:hover:text-blue-600 rounded-xl font-black text-[10px] uppercase tracking-[0.15em] transition-all flex items-center gap-2"
+                                            aria-label={`Start consultation for ${patient.patientId?.name}`}
                                         >
                                             Start Lab <ArrowRight className="h-3 w-3" />
                                         </button>
@@ -240,6 +276,17 @@ export default function DoctorQueuePage() {
                     </div>
                 </div>
             </div>
+
+            {/* Confirm Dialog */}
+            <ConfirmDialog
+                open={confirmAction.open}
+                title={confirmAction.label}
+                message={`Are you sure you want to ${confirmAction.label.toLowerCase()}?`}
+                confirmLabel="Yes, proceed"
+                variant={confirmAction.status === 'cancelled' ? 'danger' : 'default'}
+                onConfirm={() => handleStatusUpdate(confirmAction.id, confirmAction.status)}
+                onCancel={() => setConfirmAction({ open: false, id: '', status: '', label: '' })}
+            />
         </div>
     );
 }

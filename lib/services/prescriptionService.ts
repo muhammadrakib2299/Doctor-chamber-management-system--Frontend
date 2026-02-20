@@ -38,7 +38,7 @@ export const prescriptionService = {
     },
 
     // Get prescriptions (filter by patient or doctor)
-    getPrescriptions: async (params?: any) => {
+    getPrescriptions: async (params?: Record<string, string | number>) => {
         const response = await api.get('/prescriptions', { params });
         return response.data;
     },

@@ -1,17 +1,18 @@
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import axios, { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
+import toast from 'react-hot-toast';
 
-// Create axios instance
+// Create axios instance with timeout
 const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
     headers: {
         'Content-Type': 'application/json',
     },
+    timeout: 30000, // 30 second timeout
 });
 
 // Request interceptor - add auth token
 api.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
-        // Only access localStorage in browser environment
         if (typeof window !== 'undefined') {
             const token = localStorage.getItem('token') || sessionStorage.getItem('token');
             if (token) {
@@ -25,15 +26,13 @@ api.interceptors.request.use(
     }
 );
 
-// Response interceptor - handle errors
+// Response interceptor - handle errors with toast notifications
 api.interceptors.response.use(
     (response: AxiosResponse) => response,
-    (error: AxiosError) => {
+    (error: AxiosError<{ message?: string }>) => {
         if (error.response) {
-            // Handle specific error status codes
             switch (error.response.status) {
                 case 401:
-                    // Unauthorized - clear token and redirect to login
                     if (typeof window !== 'undefined') {
                         localStorage.removeItem('token');
                         sessionStorage.removeItem('token');
@@ -42,26 +41,30 @@ api.interceptors.response.use(
                     }
                     break;
                 case 403:
-                    // Forbidden - subscription expired or access denied
-                    console.error('Access denied:', error.response.data);
+                    toast.error(error.response.data?.message || 'Access denied');
                     break;
                 case 404:
-                    console.error('Resource not found');
+                    toast.error(error.response.data?.message || 'Resource not found');
+                    break;
+                case 422:
+                    // Validation errors — don't toast here, let the caller handle specific field errors
+                    break;
+                case 429:
+                    toast.error('Too many requests. Please slow down.');
                     break;
                 case 500:
-                    console.error('Server error:', error.response.data);
+                    toast.error('Server error. Please try again later.');
                     break;
                 default:
-                    console.error('API Error:', error.response.data);
+                    break;
             }
+        } else if (error.code === 'ECONNABORTED') {
+            toast.error('Request timed out. Please check your connection.');
         } else if (error.request) {
-            console.error('Network error - no response received');
-        } else {
-            console.error('Error:', error.message);
+            toast.error('Network error. Please check your internet connection.');
         }
         return Promise.reject(error);
     }
 );
 
 export default api;
-

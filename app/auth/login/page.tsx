@@ -57,12 +57,6 @@ export default function LoginPage() {
             }
         } catch (error) {
             const err = error as AxiosError<{ message: string }>;
-            console.error('Login error:', err);
-            // Fallback for demo if API fails
-            if (process.env.NODE_ENV === 'development') {
-                toast.error('API Error. Attempting Mock Login...');
-                // Simulation logic could go here if needed, but for now we stick to error
-            }
             const message = err.response?.data?.message || 'Invalid credentials. Please try again.';
             toast.error(message);
         } finally {
@@ -125,7 +119,7 @@ export default function LoginPage() {
                         </p>
                     </div>
 
-                    <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+                    <form className="space-y-6" onSubmit={handleSubmit(onSubmit)} aria-label="Login form">
                         <div className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
@@ -192,32 +186,34 @@ export default function LoginPage() {
                         </button>
                     </form>
 
-                    <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 mt-6">
-                        <p className="text-xs font-semibold text-slate-500 mb-3 uppercase tracking-wide text-center">Demo Accounts (For Testing)</p>
-                        <div className="space-y-3">
-                            <div className="flex items-center justify-between text-xs p-2 bg-white rounded border border-slate-100">
-                                <span className="font-semibold text-slate-700 w-16">Admin</span>
-                                <div className="text-right">
-                                    <p className="text-slate-600 font-medium">admin@gmail.com</p>
-                                    <p className="text-slate-400">password123</p>
+                    {process.env.NODE_ENV === 'development' && (
+                        <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 mt-6">
+                            <p className="text-xs font-semibold text-slate-500 mb-3 uppercase tracking-wide text-center">Demo Accounts (Dev Only)</p>
+                            <div className="space-y-3">
+                                <div className="flex items-center justify-between text-xs p-2 bg-white rounded border border-slate-100">
+                                    <span className="font-semibold text-slate-700 w-16">Admin</span>
+                                    <div className="text-right">
+                                        <p className="text-slate-600 font-medium">admin@gmail.com</p>
+                                        <p className="text-slate-400">password123</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="flex items-center justify-between text-xs p-2 bg-white rounded border border-slate-100">
-                                <span className="font-semibold text-slate-700 w-16">Doctor</span>
-                                <div className="text-right">
-                                    <p className="text-slate-600 font-medium">doctor@gmail.com</p>
-                                    <p className="text-slate-400">password123</p>
+                                <div className="flex items-center justify-between text-xs p-2 bg-white rounded border border-slate-100">
+                                    <span className="font-semibold text-slate-700 w-16">Doctor</span>
+                                    <div className="text-right">
+                                        <p className="text-slate-600 font-medium">doctor@gmail.com</p>
+                                        <p className="text-slate-400">password123</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="flex items-center justify-between text-xs p-2 bg-white rounded border border-slate-100">
-                                <span className="font-semibold text-slate-700 w-16">Assistant</span>
-                                <div className="text-right">
-                                    <p className="text-slate-600 font-medium">assistant@gmail.com</p>
-                                    <p className="text-slate-400">password123</p>
+                                <div className="flex items-center justify-between text-xs p-2 bg-white rounded border border-slate-100">
+                                    <span className="font-semibold text-slate-700 w-16">Assistant</span>
+                                    <div className="text-right">
+                                        <p className="text-slate-600 font-medium">assistant@gmail.com</p>
+                                        <p className="text-slate-400">password123</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
         </div>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "react-hot-toast";
+import ErrorBoundary from "@/components/ui/ErrorBoundary";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -18,8 +19,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans antialiased min-h-screen bg-slate-50`}>
-        {children}
-        <Toaster position="top-right" />
+        <ErrorBoundary>
+          {children}
+        </ErrorBoundary>
+        <Toaster position="top-right" containerProps={{ 'aria-live': 'polite' } as any} />
       </body>
     </html>
   );
