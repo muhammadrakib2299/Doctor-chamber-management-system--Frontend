@@ -1,4 +1,4 @@
-// File: D:\Rakib - projects\projects\Idea-Projects\Doctor Chembar\Frontend\app\auth\login\page.tsx
+// File: D:\Rakib - projects\Idea Project\Doctor-Chambar-MediCore\Doctor-chamber-management-system--Frontend\app\auth\login\page.tsx
 import * as entry from '../../../../../app/auth/login/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

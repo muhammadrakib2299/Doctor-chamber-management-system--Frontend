@@ -1,4 +1,4 @@
-// File: D:\Rakib - projects\projects\Idea-Projects\Doctor Chembar\Frontend\app\layout.tsx
+// File: D:\Rakib - projects\Idea Project\Doctor-Chambar-MediCore\Doctor-chamber-management-system--Frontend\app\layout.tsx
 import * as entry from '../../../app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
